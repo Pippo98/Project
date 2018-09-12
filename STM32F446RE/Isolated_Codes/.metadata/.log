@@ -60,3 +60,6 @@ Caused by: java.net.SocketTimeoutException: Read timed out
 
 !ENTRY org.eclipse.cdt.core 1 0 2018-09-12 16:17:45.054
 !MESSAGE Indexed 'CAN' (20 sources, 90 headers) in 1,49 sec: 8.751 declarations; 30.894 references; 0 unresolved inclusions; 76 syntax errors; 54 unresolved names (0,14%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2018-09-12 16:21:24.996
+!MESSAGE Indexed 'CAN' (20 sources, 90 headers) in 1,09 sec: 8.751 declarations; 30.894 references; 0 unresolved inclusions; 76 syntax errors; 54 unresolved names (0,14%)
