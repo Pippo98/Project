@@ -1,0 +1,17 @@
+16:38:59 **** Incremental Build of configuration Debug for project Test_Encoder_01 ****
+make all 
+Building target: Test_Encoder_01.elf
+Invoking: MCU GCC Linker
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -T"../STM32F446RETx_FLASH.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "Test_Encoder_01.elf" @"objects.list"   -lm
+Finished building target: Test_Encoder_01.elf
+ 
+make --no-print-directory post-build
+Generating hex and Printing size information:
+arm-none-eabi-objcopy -O ihex "Test_Encoder_01.elf" "Test_Encoder_01.hex"
+arm-none-eabi-size "Test_Encoder_01.elf"
+   text	   data	    bss	    dec	    hex	filename
+  13140	    128	   2152	  15420	   3c3c	Test_Encoder_01.elf
+ 
+
+16:38:59 Build Finished (took 464ms)
+

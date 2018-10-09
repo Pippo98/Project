@@ -1,0 +1,26 @@
+18:04:09 **** Incremental Build of configuration Debug for project Test_Encoder_02 ****
+make all 
+Building file: ../Src/main.c
+Invoking: MCU GCC Compiler
+/media/filippo/DATA/Programmazione/STM/MINE/Test_Encoder_02/Debug
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 '-D__weak=__attribute__((weak))' '-D__packed="__attribute__((__packed__))"' -DUSE_HAL_DRIVER -DSTM32F446xx -I"/media/filippo/DATA/Programmazione/STM/MINE/Test_Encoder_02/Inc" -I"/media/filippo/DATA/Programmazione/STM/MINE/Test_Encoder_02/Drivers/STM32F4xx_HAL_Driver/Inc" -I"/media/filippo/DATA/Programmazione/STM/MINE/Test_Encoder_02/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy" -I"/media/filippo/DATA/Programmazione/STM/MINE/Test_Encoder_02/Drivers/CMSIS/Device/ST/STM32F4xx/Include" -I"/media/filippo/DATA/Programmazione/STM/MINE/Test_Encoder_02/Drivers/CMSIS/Include"  -Og -g3 -Wall -fmessage-length=0 -ffunction-sections -c -fmessage-length=0 -MMD -MP -MF"Src/main.d" -MT"Src/main.o" -o "Src/main.o" "../Src/main.c"
+../Src/main.c:61:26: warning: 's_TimerInstance' defined but not used [-Wunused-variable]
+ static TIM_HandleTypeDef s_TimerInstance = {.Instance = TIM2};
+                          ^~~~~~~~~~~~~~~
+Finished building: ../Src/main.c
+ 
+Building target: Test_Encoder_02.elf
+Invoking: MCU GCC Linker
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -T"../STM32F446RETx_FLASH.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "Test_Encoder_02.elf" @"objects.list"   -lm
+Finished building target: Test_Encoder_02.elf
+ 
+make --no-print-directory post-build
+Generating hex and Printing size information:
+arm-none-eabi-objcopy -O ihex "Test_Encoder_02.elf" "Test_Encoder_02.hex"
+arm-none-eabi-size "Test_Encoder_02.elf"
+   text	   data	    bss	    dec	    hex	filename
+  13536	    140	   2176	  15852	   3dec	Test_Encoder_02.elf
+ 
+
+18:04:10 Build Finished (took 1s.146ms)
+

@@ -1,0 +1,27 @@
+18:48:08 **** Incremental Build of configuration Debug for project Test_Encoder_00 ****
+make all 
+make: Attenzione: il file "Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.d" ha un orario di modifica 5111 nel futuro
+Building file: ../Src/main.c
+Invoking: MCU GCC Compiler
+/media/filippo/DATA/Programmazione/STM/MINE/Test_Encoder_00/Debug
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DUSE_HAL_DRIVER -DSTM32F446xx '-D__weak=__attribute__((weak))' '-D__packed="__attribute__((__packed__))"' -I"/media/filippo/DATA/Programmazione/STM/MINE/Test_Encoder_00/Inc" -I"/media/filippo/DATA/Programmazione/STM/MINE/Test_Encoder_00/Drivers/STM32F4xx_HAL_Driver/Inc" -I"/media/filippo/DATA/Programmazione/STM/MINE/Test_Encoder_00/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy" -I"/media/filippo/DATA/Programmazione/STM/MINE/Test_Encoder_00/Drivers/CMSIS/Device/ST/STM32F4xx/Include" -I"/media/filippo/DATA/Programmazione/STM/MINE/Test_Encoder_00/Drivers/CMSIS/Include"  -Og -g3 -Wall -fmessage-length=0 -ffunction-sections -c -fmessage-length=0 -MMD -MP -MF"Src/main.d" -MT"Src/main.o" -o "Src/main.o" "../Src/main.c"
+Finished building: ../Src/main.c
+ 
+Building target: Test_Encoder_00.elf
+Invoking: MCU GCC Linker
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -specs=nosys.specs -specs=nano.specs -T"../STM32F446RETx_FLASH.ld" -Wl,-Map=output.map -Wl,--gc-sections -o "Test_Encoder_00.elf" @"objects.list"   -lm
+Finished building target: Test_Encoder_00.elf
+ 
+make --no-print-directory post-build
+make[1]: Attenzione: il file "Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.d" ha un orario di modifica 5111 nel futuro
+Generating hex and Printing size information:
+arm-none-eabi-objcopy -O ihex "Test_Encoder_00.elf" "Test_Encoder_00.hex"
+arm-none-eabi-size "Test_Encoder_00.elf"
+   text	   data	    bss	    dec	    hex	filename
+  13160	    128	   2152	  15440	   3c50	Test_Encoder_00.elf
+ 
+make[1]: attenzione: rilevato un tempo alterato. La creazione può essere incompleta.
+make: attenzione: rilevato un tempo alterato. La creazione può essere incompleta.
+
+18:48:09 Build Finished (took 664ms)
+

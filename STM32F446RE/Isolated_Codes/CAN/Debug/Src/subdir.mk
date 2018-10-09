@@ -27,7 +27,7 @@ Src/%.o: ../Src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: MCU GCC Compiler'
 	@echo $(PWD)
-	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 '-D__weak=__attribute__((weak))' '-D__packed=__attribute__((__packed__))' -DUSE_HAL_DRIVER -DSTM32F446xx -I"C:/Users/matte/Desktop/E-agle/ProjectSTM32/CAN/Inc" -I"C:/Users/matte/Desktop/E-agle/ProjectSTM32/CAN/Drivers/STM32F4xx_HAL_Driver/Inc" -I"C:/Users/matte/Desktop/E-agle/ProjectSTM32/CAN/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy" -I"C:/Users/matte/Desktop/E-agle/ProjectSTM32/CAN/Drivers/CMSIS/Device/ST/STM32F4xx/Include" -I"C:/Users/matte/Desktop/E-agle/ProjectSTM32/CAN/Drivers/CMSIS/Include"  -O2 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
+	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 '-D__weak=__attribute__((weak))' '-D__packed=__attribute__((__packed__))' -DUSE_HAL_DRIVER -DSTM32F446xx -I"/media/filippo/DATA/Programmazione/Github/Project/STM32F446RE/Isolated_Codes/CAN/Inc" -I"/media/filippo/DATA/Programmazione/Github/Project/STM32F446RE/Isolated_Codes/CAN/Drivers/STM32F4xx_HAL_Driver/Inc" -I"/media/filippo/DATA/Programmazione/Github/Project/STM32F446RE/Isolated_Codes/CAN/Drivers/STM32F4xx_HAL_Driver/Inc/Legacy" -I"/media/filippo/DATA/Programmazione/Github/Project/STM32F446RE/Isolated_Codes/CAN/Drivers/CMSIS/Device/ST/STM32F4xx/Include" -I"/media/filippo/DATA/Programmazione/Github/Project/STM32F446RE/Isolated_Codes/CAN/Drivers/CMSIS/Include"  -O2 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
