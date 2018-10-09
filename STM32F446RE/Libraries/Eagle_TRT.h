@@ -8,7 +8,10 @@
 #include "stdlib.h"
 #include "string.h"
 
-
+void gyro_init();
+void magn_accel_init();
+void gyro_calib(float * kp_G, float * X_G_axis_offset, float * Y_G_axis_offset, float * Z_G_axis_offset);
+void accel_calib(float * kp_A, float * X_A_axis_offset, float * Y_G_axis_offset, float * Z_G_axis_offset);
 int LSMD9S0_check(void);
 float LSMD9S0_read(GPIO_TypeDef* GPIOx_InUse, uint16_t GPIO_Pin_InUse, GPIO_TypeDef* GPIOx_NotInUse, uint16_t GPIO_Pin_NotInUse, uint8_t REG_L, uint8_t REG_H, float kp);
 float LSM9DS0_calib(GPIO_TypeDef* GPIOx_InUse, uint16_t GPIO_Pin_InUse, GPIO_TypeDef* GPIOx_NotInUse, uint16_t GPIO_Pin_NotInUse, uint8_t REG_L, uint8_t REG_H, float kp);

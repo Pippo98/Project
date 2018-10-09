@@ -28,6 +28,8 @@
 #ifdef HAL_SPI_MODULE_ENABLED
 #include "stm32f4xx_hal_spi.h"
 
+//gyro initialization function
+//call this function before requesting data from the sensor
 void gyro_init(){
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET); ///CS_G to 0
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET); ///CS_XM to 1
@@ -44,6 +46,8 @@ void gyro_init(){
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET); ///CS_XM to 0
 }
 
+//accelerometer and magnetometer initialization
+//call this function before requesting data from the sensor
 void magn_accel_init(){
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET); ///CS_G to 1
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET); ///CS_XM to 0
@@ -81,18 +85,22 @@ void magn_accel_init(){
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET); ///CS_XM to 1
 }
 
-void gyro_calib(){
-	float kp_G = 0.0175;
-  float X_G_axis_offset = LSM9DS0_calib(GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_9, OUT_X_L_G_ADD, OUT_X_H_G_ADD, kp_G);
-  float Y_G_axis_offset = LSM9DS0_calib(GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_9, OUT_Y_L_G_ADD, OUT_Y_H_G_ADD, kp_G);
-  float Z_G_axis_offset = LSM9DS0_calib(GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_9, OUT_Z_L_G_ADD, OUT_Z_H_G_ADD, kp_G);
+
+//this function is used to calibrate the gyroscope
+void gyro_calib(float * kp_G, float * X_G_axis_offset, float * Y_G_axis_offset, float * Z_G_axis_offset){
+	*kp_G = 0.0175;
+  *X_G_axis_offset = LSM9DS0_calib(GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_9, OUT_X_L_G_ADD, OUT_X_H_G_ADD, kp_G);
+  *Y_G_axis_offset = LSM9DS0_calib(GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_9, OUT_Y_L_G_ADD, OUT_Y_H_G_ADD, kp_G);
+  *Z_G_axis_offset = LSM9DS0_calib(GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_9, OUT_Z_L_G_ADD, OUT_Z_H_G_ADD, kp_G);
 }
 
-void accel_calib(){
-	float kp_A = 0.00119782; ///0.000122 * 9,81
-  float X_A_axis_offset = LSM9DS0_calib(GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_X_L_A_ADD, OUT_X_H_A_ADD, kp_A);
-  float Y_A_axis_offset = LSM9DS0_calib(GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_Y_L_A_ADD, OUT_Y_H_A_ADD, kp_A);
-  float Z_A_axis_offset = LSM9DS0_calib(GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_Z_L_A_ADD, OUT_Z_H_A_ADD, kp_A);
+
+//this function is used to calibrate the accelerometer
+void accel_calib(float * kp_A, float * X_A_axis_offset, float * Y_G_axis_offset, float * Z_G_axis_offset){
+	*kp_A = 0.00119782; ///0.000122 * 9,81
+  *X_A_axis_offset = LSM9DS0_calib(GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_X_L_A_ADD, OUT_X_H_A_ADD, kp_A);
+  *Y_A_axis_offset = LSM9DS0_calib(GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_Y_L_A_ADD, OUT_Y_H_A_ADD, kp_A);
+  *Z_A_axis_offset = LSM9DS0_calib(GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_Z_L_A_ADD, OUT_Z_H_A_ADD, kp_A);
 }
 
 int LSMD9S0_check(void)
