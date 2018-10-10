@@ -30,57 +30,57 @@
 
 //gyro initialization function
 //call this function before requesting data from the sensor
-void gyro_init(){
+void gyro_init(SPI_HandleTypeDef *hspi){
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET); ///CS_G to 0
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET); ///CS_XM to 1
-  HAL_SPI_Transmit(&hspi1, (uint8_t*)&CTRL_REG1_G_ADD, 1, 10); ///Writing the address
-  HAL_SPI_Transmit(&hspi1, (uint8_t*)&CTRL_REG1_G_VAL, 1, 10); ///Writing 0b00001111 to enable PowerMode and x,y,z axis
+  HAL_SPI_Transmit(hspi, (uint8_t*)&CTRL_REG1_G_ADD, 1, 10); ///Writing the address
+  HAL_SPI_Transmit(hspi, (uint8_t*)&CTRL_REG1_G_VAL, 1, 10); ///Writing 0b00001111 to enable PowerMode and x,y,z axis
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET); ///CS_G to 1
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET); ///CS_XM to 0
 
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET); ///CS_G to 0
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET); ///CS_XM to 1
-  HAL_SPI_Transmit(&hspi1, (uint8_t*)&CTRL_REG4_G_ADD, 1, 10); ///Writing the address
-  HAL_SPI_Transmit(&hspi1, (uint8_t*)&CTRL_REG4_G_VAL, 1, 10); ///Writing 0b00010000 to set full-scale selection to 500dps
+  HAL_SPI_Transmit(hspi, (uint8_t*)&CTRL_REG4_G_ADD, 1, 10); ///Writing the address
+  HAL_SPI_Transmit(hspi, (uint8_t*)&CTRL_REG4_G_VAL, 1, 10); ///Writing 0b00010000 to set full-scale selection to 500dps
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET); ///CS_G to 1
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET); ///CS_XM to 0
 }
 
 //accelerometer and magnetometer initialization
 //call this function before requesting data from the sensor
-void magn_accel_init(){
+void magn_accel_init(SPI_HandleTypeDef *hspi){
 	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET); ///CS_G to 1
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET); ///CS_XM to 0
-  HAL_SPI_Transmit(&hspi1, (uint8_t*)&CTRL_REG1_XM_ADD, 1, 10); ///Writing the address
-  HAL_SPI_Transmit(&hspi1, (uint8_t*)&CTRL_REG1_XM_VAL, 1, 10); ///Writing 0b10100111 to enable 1600Hz and x,y,z axis
+  HAL_SPI_Transmit(hspi, (uint8_t*)&CTRL_REG1_XM_ADD, 1, 10); ///Writing the address
+  HAL_SPI_Transmit(hspi, (uint8_t*)&CTRL_REG1_XM_VAL, 1, 10); ///Writing 0b10100111 to enable 1600Hz and x,y,z axis
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET); ///CS_G to 0
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET); ///CS_XM to 1
 
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET); ///CS_G to 1
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET); ///CS_XM to 0
-  HAL_SPI_Transmit(&hspi1, (uint8_t*)&CTRL_REG2_XM_ADD, 1, 10); ///Writing the address
-  HAL_SPI_Transmit(&hspi1, (uint8_t*)&CTRL_REG2_XM_VAL, 1, 10); ///Writing 0b00001000 to set +/-4g range for axel axis
+  HAL_SPI_Transmit(hspi, (uint8_t*)&CTRL_REG2_XM_ADD, 1, 10); ///Writing the address
+  HAL_SPI_Transmit(hspi, (uint8_t*)&CTRL_REG2_XM_VAL, 1, 10); ///Writing 0b00001000 to set +/-4g range for axel axis
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET); ///CS_G to 0
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET); ///CS_XM to 1
 
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET); ///CS_G to 1
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET); ///CS_XM to 0
-  HAL_SPI_Transmit(&hspi1, (uint8_t*)&CTRL_REG5_XM_ADD, 1, 10); ///Writing the address
-  HAL_SPI_Transmit(&hspi1, (uint8_t*)&CTRL_REG5_XM_VAL, 1, 10); ///Writing 0b01110000 to set high resolution for magn and 50Hz
+  HAL_SPI_Transmit(hspi, (uint8_t*)&CTRL_REG5_XM_ADD, 1, 10); ///Writing the address
+  HAL_SPI_Transmit(hspi, (uint8_t*)&CTRL_REG5_XM_VAL, 1, 10); ///Writing 0b01110000 to set high resolution for magn and 50Hz
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET); ///CS_G to 0
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET); ///CS_XM to 1
 
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET); ///CS_G to 1
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET); ///CS_XM to 0
-  HAL_SPI_Transmit(&hspi1, (uint8_t*)&CTRL_REG6_XM_ADD, 1, 10); ///Writing the address
-  HAL_SPI_Transmit(&hspi1, (uint8_t*)&CTRL_REG6_XM_VAL, 1, 10); ///Writing 0b00100000 to set +/-4 gauss range for magn axis
+  HAL_SPI_Transmit(hspi, (uint8_t*)&CTRL_REG6_XM_ADD, 1, 10); ///Writing the address
+  HAL_SPI_Transmit(hspi, (uint8_t*)&CTRL_REG6_XM_VAL, 1, 10); ///Writing 0b00100000 to set +/-4 gauss range for magn axis
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET); ///CS_G to 0
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET); ///CS_XM to 1
 
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_SET); ///CS_G to 1
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_RESET); ///CS_XM to 0
-  HAL_SPI_Transmit(&hspi1, (uint8_t*)&CTRL_REG7_XM_ADD, 1, 10); ///Writing the address
-  HAL_SPI_Transmit(&hspi1, (uint8_t*)&CTRL_REG7_XM_VAL, 1, 10); ///Writing 0b00000000 to set continuos conversion for magn axis
+  HAL_SPI_Transmit(hspi, (uint8_t*)&CTRL_REG7_XM_ADD, 1, 10); ///Writing the address
+  HAL_SPI_Transmit(hspi, (uint8_t*)&CTRL_REG7_XM_VAL, 1, 10); ///Writing 0b00000000 to set continuos conversion for magn axis
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_8, GPIO_PIN_RESET); ///CS_G to 0
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET); ///CS_XM to 1
 }
@@ -103,23 +103,23 @@ void accel_calib(float * kp_A, float * X_A_axis_offset, float * Y_G_axis_offset,
   *Z_A_axis_offset = LSM9DS0_calib(GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_Z_L_A_ADD, OUT_Z_H_A_ADD, kp_A);
 }
 
-int LSMD9S0_check(void)
+int LSMD9S0_check(SPI_HandleTypeDef *hspi)
 {
 	int check = 0;
 
 	///GYRO IS WORKING
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_RESET); ///CS_G to 0
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_SET); ///CS_XM to 1
-	HAL_SPI_Transmit(&hspi1, (uint8_t*)&WHO_AM_I_G, 1, 10); ///Writing on register ----> (uint8_t*) it's the cast of the pointer to WHO_AM_I_G (giving by &variable)
-	HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)&ZERO, (uint8_t*)&WHO_AM_I_G_VAL, 1, 10); ///Reading from register sending a 0x00
+	HAL_SPI_Transmit(hspi, (uint8_t*)&WHO_AM_I_G, 1, 10); ///Writing on register ----> (uint8_t*) it's the cast of the pointer to WHO_AM_I_G (giving by &variable)
+	HAL_SPI_TransmitReceive(hspi, (uint8_t*)&ZERO, (uint8_t*)&WHO_AM_I_G_VAL, 1, 10); ///Reading from register sending a 0x00
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_SET); ///CS_G to 1
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_RESET); ///CS_XM to 0
 
 	///AXEL/MAGN ARE WORKING
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_SET); ///CS_G to 1
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_RESET); ///CS_XM to 0
-	HAL_SPI_Transmit(&hspi1, (uint8_t*)&WHO_AM_I_XM, 1, 10); ///Writing on register ----> (uint8_t*) it's the cast of the pointer to WHO_AM_I_XM (giving by &variable)
-	HAL_SPI_TransmitReceive(&hspi1, (uint8_t*)&ZERO, (uint8_t*)&WHO_AM_I_XM_VAL, 1, 10); ///Reading from register sending a 0x00
+	HAL_SPI_Transmit(hspi, (uint8_t*)&WHO_AM_I_XM, 1, 10); ///Writing on register ----> (uint8_t*) it's the cast of the pointer to WHO_AM_I_XM (giving by &variable)
+	HAL_SPI_TransmitReceive(hspi, (uint8_t*)&ZERO, (uint8_t*)&WHO_AM_I_XM_VAL, 1, 10); ///Reading from register sending a 0x00
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_RESET); ///CS_G to 0
 	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_SET); ///CS_XM to 1
 
@@ -139,7 +139,7 @@ int LSMD9S0_check(void)
 
 
 
-float LSMD9S0_read(GPIO_TypeDef* GPIOx_InUse, uint16_t GPIO_Pin_InUse, GPIO_TypeDef* GPIOx_NotInUse, uint16_t GPIO_Pin_NotInUse, uint8_t REG_L, uint8_t REG_H, float kp)
+float LSMD9S0_read(SPI_HandleTypeDef *hspi, GPIO_TypeDef* GPIOx_InUse, uint16_t GPIO_Pin_InUse, GPIO_TypeDef* GPIOx_NotInUse, uint16_t GPIO_Pin_NotInUse, uint8_t REG_L, uint8_t REG_H, float kp)
 {
 	uint8_t OUT_L_VAL;
 	uint8_t OUT_H_VAL;
@@ -147,16 +147,16 @@ float LSMD9S0_read(GPIO_TypeDef* GPIOx_InUse, uint16_t GPIO_Pin_InUse, GPIO_Type
 	///READING X_AXIS ROTATION
 	HAL_GPIO_WritePin(GPIOx_InUse, GPIO_Pin_InUse, GPIO_PIN_RESET); ///CS_InUse to 0
 	HAL_GPIO_WritePin(GPIOx_NotInUse, GPIO_Pin_NotInUse, GPIO_PIN_SET); ///CS_NotInUse to 1
-	HAL_SPI_Transmit(&hspi1, &REG_L, 1, 10); ///Writing LOW address
-	HAL_SPI_Receive(&hspi1, (uint8_t*)&OUT_L_VAL, 1, 10); ///Saving LOW data
+	HAL_SPI_Transmit(hspi, &REG_L, 1, 10); ///Writing LOW address
+	HAL_SPI_Receive(hspi, (uint8_t*)&OUT_L_VAL, 1, 10); ///Saving LOW data
 	HAL_GPIO_WritePin(GPIOx_InUse, GPIO_Pin_InUse, GPIO_PIN_SET); ///CS_InUse to 1
 	HAL_GPIO_WritePin(GPIOx_NotInUse, GPIO_Pin_NotInUse, GPIO_PIN_RESET); ///CS_NotInUse to 0
 
 
 	HAL_GPIO_WritePin(GPIOx_InUse, GPIO_Pin_InUse, GPIO_PIN_RESET); ///CS_InUse to 0
 	HAL_GPIO_WritePin(GPIOx_NotInUse, GPIO_Pin_NotInUse, GPIO_PIN_SET); ///CS_NotInUse to 1
-	HAL_SPI_Transmit(&hspi1, &REG_H, 1, 10); ///Writing HIGH address
-	HAL_SPI_Receive(&hspi1, (uint8_t*)&OUT_H_VAL, 1, 10); ///Saving HIGH data
+	HAL_SPI_Transmit(hspi, &REG_H, 1, 10); ///Writing HIGH address
+	HAL_SPI_Receive(hspi, (uint8_t*)&OUT_H_VAL, 1, 10); ///Saving HIGH data
 	HAL_GPIO_WritePin(GPIOx_InUse, GPIO_Pin_InUse, GPIO_PIN_SET); ///CS_InUse to 1
 	HAL_GPIO_WritePin(GPIOx_NotInUse, GPIO_Pin_NotInUse, GPIO_PIN_RESET); ///CS_NotInUse to 0
 
@@ -170,12 +170,12 @@ float LSMD9S0_read(GPIO_TypeDef* GPIOx_InUse, uint16_t GPIO_Pin_InUse, GPIO_Type
 	return axis;
 }
 
-float LSM9DS0_calib(GPIO_TypeDef* GPIOx_InUse, uint16_t GPIO_Pin_InUse, GPIO_TypeDef* GPIOx_NotInUse, uint16_t GPIO_Pin_NotInUse, uint8_t REG_L, uint8_t REG_H, float kp)
+float LSM9DS0_calib(SPI_HandleTypeDef *hspi, GPIO_TypeDef* GPIOx_InUse, uint16_t GPIO_Pin_InUse, GPIO_TypeDef* GPIOx_NotInUse, uint16_t GPIO_Pin_NotInUse, uint8_t REG_L, uint8_t REG_H, float kp)
 {
 	float axis_cal;
 	float sum_cal = 0.0000;
 	for(int i = 0; i < 10000; i++){
-		float tmp = LSMD9S0_read(GPIOx_InUse, GPIO_Pin_InUse, GPIOx_NotInUse, GPIO_Pin_NotInUse, REG_L, REG_H, kp);
+		float tmp = LSMD9S0_read(hspi, GPIOx_InUse, GPIO_Pin_InUse, GPIOx_NotInUse, GPIO_Pin_NotInUse, REG_L, REG_H, kp);
 		sum_cal = sum_cal + tmp;
 	}
 	axis_cal = sum_cal / 10000;
