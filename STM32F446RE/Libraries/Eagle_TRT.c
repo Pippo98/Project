@@ -1,11 +1,11 @@
 #include "Eagle_TRT.h"
-#include "inttypes.h"
-#include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_gpio.h"
+//#include "inttypes.h"
+//#include "stm32f4xx_hal.h"
+//#include "stm32f4xx_hal_gpio.h"
 #include "stm32f4xx_hal_conf.h"
-#include "string.h"
-#include "stdio.h"
-#include "stdlib.h"
+//#include "string.h"
+//#include "stdio.h"
+//#include "stdlib.h"
 
 /*
 * Driver for all the stm in the Eagle_TRT veichle
@@ -22,11 +22,49 @@
 // for the configuration of the second timer you have to configure it to generate an interrupt
 // that interrupt must be long enough to calculate a speed but not too long because you have to get the two angles in the same wheel rotation
 
+///IMU VARIABLES///
+uint8_t ZERO = 0x00;
+uint8_t WHO_AM_I_G = 0x8F;
+uint8_t WHO_AM_I_G_VAL;
+uint8_t WHO_AM_I_XM = 0x8F;
+uint8_t WHO_AM_I_XM_VAL;
+
+uint8_t CTRL_REG1_G_ADD = 0x20;
+uint8_t CTRL_REG1_G_VAL = 0x0F;
+uint8_t CTRL_REG4_G_ADD = 0x23;
+uint8_t CTRL_REG4_G_VAL = 0x10;
+
+uint8_t CTRL_REG1_XM_ADD = 0x20;
+uint8_t CTRL_REG1_XM_VAL = 0xA7;
+uint8_t CTRL_REG2_XM_ADD = 0x21;
+uint8_t CTRL_REG2_XM_VAL = 0x08;
+uint8_t CTRL_REG5_XM_ADD = 0x24;
+uint8_t CTRL_REG5_XM_VAL = 0x70;
+uint8_t CTRL_REG6_XM_ADD = 0x25;
+uint8_t CTRL_REG6_XM_VAL = 0x20;
+uint8_t CTRL_REG7_XM_ADD = 0x26;
+uint8_t CTRL_REG7_XM_VAL = 0x00;
+
+uint8_t OUT_X_L_G_ADD = 0xE8;
+uint8_t OUT_X_H_G_ADD = 0xE9;
+uint8_t OUT_Y_L_G_ADD = 0xEA;
+uint8_t OUT_Y_H_G_ADD = 0xEB;
+uint8_t OUT_Z_L_G_ADD = 0xEC;
+uint8_t OUT_Z_H_G_ADD = 0xED;
+
+uint8_t OUT_X_L_A_ADD = 0xE8;
+uint8_t OUT_X_H_A_ADD = 0xE9;
+uint8_t OUT_Y_L_A_ADD = 0xEA;
+uint8_t OUT_Y_H_A_ADD = 0xEB;
+uint8_t OUT_Z_L_A_ADD = 0xEC;
+uint8_t OUT_Z_H_A_ADD = 0xED;
 
 
 
 #ifdef HAL_SPI_MODULE_ENABLED
 #include "stm32f4xx_hal_spi.h"
+
+
 
 //gyro initialization function
 //call this function before requesting data from the sensor
@@ -87,55 +125,23 @@ void magn_accel_init(SPI_HandleTypeDef *hspi){
 
 
 //this function is used to calibrate the gyroscope
-void gyro_calib(float * kp_G, float * X_G_axis_offset, float * Y_G_axis_offset, float * Z_G_axis_offset){
-	*kp_G = 0.0175;
-  *X_G_axis_offset = LSM9DS0_calib(GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_9, OUT_X_L_G_ADD, OUT_X_H_G_ADD, kp_G);
-  *Y_G_axis_offset = LSM9DS0_calib(GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_9, OUT_Y_L_G_ADD, OUT_Y_H_G_ADD, kp_G);
-  *Z_G_axis_offset = LSM9DS0_calib(GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_9, OUT_Z_L_G_ADD, OUT_Z_H_G_ADD, kp_G);
+void gyro_calib(SPI_HandleTypeDef *hspi, float * X_G_axis_offset, float * Y_G_axis_offset, float * Z_G_axis_offset){
+	float kp_G = 0.0175;
+	*X_G_axis_offset = LSM9DS0_calib(hspi,GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_9, OUT_X_L_G_ADD, OUT_X_H_G_ADD, kp_G);
+	*Y_G_axis_offset = LSM9DS0_calib(hspi,GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_9, OUT_Y_L_G_ADD, OUT_Y_H_G_ADD, kp_G);
+	*Z_G_axis_offset = LSM9DS0_calib(hspi,GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_9, OUT_Z_L_G_ADD, OUT_Z_H_G_ADD, kp_G);
 }
 
 
 //this function is used to calibrate the accelerometer
-void accel_calib(float * kp_A, float * X_A_axis_offset, float * Y_G_axis_offset, float * Z_G_axis_offset){
-	*kp_A = 0.00119782; ///0.000122 * 9,81
-  *X_A_axis_offset = LSM9DS0_calib(GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_X_L_A_ADD, OUT_X_H_A_ADD, kp_A);
-  *Y_A_axis_offset = LSM9DS0_calib(GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_Y_L_A_ADD, OUT_Y_H_A_ADD, kp_A);
-  *Z_A_axis_offset = LSM9DS0_calib(GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_Z_L_A_ADD, OUT_Z_H_A_ADD, kp_A);
+void accel_calib(SPI_HandleTypeDef *hspi, float * X_A_axis_offset, float * Y_A_axis_offset, float * Z_A_axis_offset){
+	float kp_A = 0.00119782; ///0.000122 * 9,81
+	*X_A_axis_offset = LSM9DS0_calib(hspi,GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_X_L_A_ADD, OUT_X_H_A_ADD, kp_A);
+	*Y_A_axis_offset = LSM9DS0_calib(hspi,GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_Y_L_A_ADD, OUT_Y_H_A_ADD, kp_A);
+	*Z_A_axis_offset = LSM9DS0_calib(hspi,GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_Z_L_A_ADD, OUT_Z_H_A_ADD, kp_A);
 }
 
-int LSMD9S0_check(SPI_HandleTypeDef *hspi)
-{
-	int check = 0;
 
-	///GYRO IS WORKING
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_RESET); ///CS_G to 0
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_SET); ///CS_XM to 1
-	HAL_SPI_Transmit(hspi, (uint8_t*)&WHO_AM_I_G, 1, 10); ///Writing on register ----> (uint8_t*) it's the cast of the pointer to WHO_AM_I_G (giving by &variable)
-	HAL_SPI_TransmitReceive(hspi, (uint8_t*)&ZERO, (uint8_t*)&WHO_AM_I_G_VAL, 1, 10); ///Reading from register sending a 0x00
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_SET); ///CS_G to 1
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_RESET); ///CS_XM to 0
-
-	///AXEL/MAGN ARE WORKING
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_SET); ///CS_G to 1
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_RESET); ///CS_XM to 0
-	HAL_SPI_Transmit(hspi, (uint8_t*)&WHO_AM_I_XM, 1, 10); ///Writing on register ----> (uint8_t*) it's the cast of the pointer to WHO_AM_I_XM (giving by &variable)
-	HAL_SPI_TransmitReceive(hspi, (uint8_t*)&ZERO, (uint8_t*)&WHO_AM_I_XM_VAL, 1, 10); ///Reading from register sending a 0x00
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_RESET); ///CS_G to 0
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_SET); ///CS_XM to 1
-
-	///AXEL/GYRO STATUS
-	if (WHO_AM_I_G_VAL != 212){
-		check = 1;
-	}
-	if (WHO_AM_I_XM_VAL != 212){
-		check = 2;
-	}
-	if ((WHO_AM_I_G_VAL != 212) & (WHO_AM_I_XM_VAL != 212)){
-		check = 3;
-	}
-
-	return check;
-}
 
 
 
@@ -181,6 +187,60 @@ float LSM9DS0_calib(SPI_HandleTypeDef *hspi, GPIO_TypeDef* GPIOx_InUse, uint16_t
 	axis_cal = sum_cal / 10000;
 	return axis_cal;
 }
+int LSMD9S0_check(SPI_HandleTypeDef *hspi){
+	int check = 0;
+
+	///GYRO IS WORKING
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_RESET); ///CS_G to 0
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_SET); ///CS_XM to 1
+	HAL_SPI_Transmit(hspi, (uint8_t*)&WHO_AM_I_G, 1, 10); ///Writing on register ----> (uint8_t*) it's the cast of the pointer to WHO_AM_I_G (giving by &variable)
+	HAL_SPI_TransmitReceive(hspi, (uint8_t*)&ZERO, (uint8_t*)&WHO_AM_I_G_VAL, 1, 10); ///Reading from register sending a 0x00
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_SET); ///CS_G to 1
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_RESET); ///CS_XM to 0
+
+	///AXEL/MAGN ARE WORKING
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_SET); ///CS_G to 1
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_RESET); ///CS_XM to 0
+	HAL_SPI_Transmit(hspi, (uint8_t*)&WHO_AM_I_XM, 1, 10); ///Writing on register ----> (uint8_t*) it's the cast of the pointer to WHO_AM_I_XM (giving by &variable)
+	HAL_SPI_TransmitReceive(hspi, (uint8_t*)&ZERO, (uint8_t*)&WHO_AM_I_XM_VAL, 1, 10); ///Reading from register sending a 0x00
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_10, GPIO_PIN_RESET); ///CS_G to 0
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_11, GPIO_PIN_SET); ///CS_XM to 1
+
+	///AXEL/GYRO STATUS
+	if (WHO_AM_I_G_VAL != 212){
+	check = 1;
+	}
+	if (WHO_AM_I_XM_VAL != 212){
+	check = 2;
+	}
+	if ((WHO_AM_I_G_VAL != 212) & (WHO_AM_I_XM_VAL != 212)){
+		check = 3;
+	}
+
+	return check;
+}
+///Reading G_axis values
+void gyro_read(SPI_HandleTypeDef *hspi,float * X_G_axis, float * Y_G_axis, float * Z_G_axis, float *X_G_axis_offset,float * Y_G_axis_offset,float * Z_G_axis_offset){
+
+	float kp_G = 0.0175;
+	*X_G_axis = LSMD9S0_read(hspi,GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_9, OUT_X_L_G_ADD, OUT_X_H_G_ADD, kp_G);
+	*X_G_axis = X_G_axis - X_G_axis_offset;
+	*Y_G_axis = LSMD9S0_read(hspi,GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_9, OUT_Y_L_G_ADD, OUT_Y_H_G_ADD, kp_G);
+	*Y_G_axis = Y_G_axis - Y_G_axis_offset;
+	*Z_G_axis = LSMD9S0_read(hspi,GPIOA, GPIO_PIN_8, GPIOC, GPIO_PIN_9, OUT_Z_L_G_ADD, OUT_Z_H_G_ADD, kp_G);
+	*Z_G_axis = Z_G_axis - Z_G_axis_offset;
+}
+///Reading A_axis values
+void axel_read(SPI_HandleTypeDef *hspi,float * X_A_axis, float * Y_A_axis, float * Z_A_axis,float *X_A_axis_offset,float * Y_A_axis_offset,float * Z_A_axis_offset){
+	float kp_A = 0.00119782; ///0.000122 * 9,81
+	*X_A_axis = LSMD9S0_read(hspi,GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_X_L_A_ADD, OUT_X_H_A_ADD, kp_A);
+	*X_A_axis = X_A_axis - X_A_axis_offset;
+	*Y_A_axis = LSMD9S0_read(hspi,GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_Y_L_A_ADD, OUT_Y_H_A_ADD, kp_A);
+	*Y_A_axis = Y_A_axis - Y_A_axis_offset;
+	*Z_A_axis = LSMD9S0_read(hspi,GPIOC, GPIO_PIN_9, GPIOA, GPIO_PIN_8, OUT_Z_L_A_ADD, OUT_Z_H_A_ADD, kp_A);
+	*Z_A_axis = Z_A_axis - Z_A_axis_offset + 9.81;
+}
+
 #endif
 
 
@@ -190,7 +250,7 @@ float LSM9DS0_calib(SPI_HandleTypeDef *hspi, GPIO_TypeDef* GPIOx_InUse, uint16_t
 //id = id of the message to be sent
 //dataTx = the array that contains the data to be sent
 //size = size of the array
-int CAN_Send(int id, uint8_t dataTx[], int size){
+int CAN_Send(CAN_HandleTypeDef *hcan,int id, uint8_t dataTx[], int size){
 
 	uint32_t mailbox;
 	uint8_t flag = 0;
@@ -202,8 +262,8 @@ int CAN_Send(int id, uint8_t dataTx[], int size){
 	TxHeader.DLC = size;
 	TxHeader.TransmitGlobalTime = DISABLE;
 
-	if (HAL_CAN_GetTxMailboxesFreeLevel(&hcan1) != 0 && HAL_CAN_IsTxMessagePending(&hcan1, CAN_TX_MAILBOX0) == 0){
-		HAL_CAN_AddTxMessage(&hcan1, &TxHeader, dataTx, &mailbox);
+	if (HAL_CAN_GetTxMailboxesFreeLevel(hcan) != 0 && HAL_CAN_IsTxMessagePending(hcan, CAN_TX_MAILBOX0) == 0){
+		HAL_CAN_AddTxMessage(hcan, &TxHeader, dataTx, &mailbox);
 		flag = 1;
 	}
 
@@ -215,10 +275,11 @@ int CAN_Send(int id, uint8_t dataTx[], int size){
 //you can call this function in the callback of the CAN interrupt
 //DataRx = pointer to the buffer you are receiveng
 //size = size of the buffer you are using
-int CAN_Receive(uint8_t *DataRx, int size){
+int CAN_Receive(CAN_HandleTypeDef *hcan,uint8_t *DataRx, int size){
+	CAN_RxHeaderTypeDef RxHeader;
 
-	if (HAL_CAN_GetRxFifoFillLevel(&hcan1, CAN_RX_FIFO0) != 0){
-		HAL_CAN_GetRxMessage(&hcan1, CAN_RX_FIFO0, &RxHeader, DataRx);
+	if (HAL_CAN_GetRxFifoFillLevel(hcan, CAN_RX_FIFO0) != 0){
+		HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, &RxHeader, DataRx);
 	}
 
 	int id = RxHeader.StdId;
@@ -385,12 +446,10 @@ void print(UART_HandleTypeDef *huart, char* text){
 //int his function that variable changes value from 9600 to 57600
 //huart = huart at which GPS is connected
 //baud = globl variable initilized to 9600
-void GPS_INIT(UART_HandleTypeDef *huart, int *baud){
+void GPS_INIT(UART_HandleTypeDef *huart){
 	//default gps baud rate is 9600
 	//set gps baud rate to 57600
 
-	baud = 9600;
-	MX_USART1_UART_Init();
 
 	for(int i = 0; i < 50; i++){
 		HAL_UART_Transmit(huart, (uint8_t*)PMTK_SET_BAUD_57600, strlen(PMTK_SET_BAUD_57600), 20);
@@ -399,8 +458,12 @@ void GPS_INIT(UART_HandleTypeDef *huart, int *baud){
 
 	//change the baud rate of the stm to 57600
 	HAL_Delay(50);
-	baud = 57600;
-	MX_USART1_UART_Init();
+	//MX_USART1_UART_Init();
+	huart->Init.BaudRate = 57600;
+	if (HAL_UART_Init(huart) != HAL_OK)
+	  {
+	    _Error_Handler(__FILE__, __LINE__);
+	  }
 
 	//send other commands to speed up the data flow
 	for(int i = 0; i < 50; i++){
@@ -515,23 +578,23 @@ double read_encoder(TIM_HandleTypeDef *TimerInstance){
 //htim = timer TimerInstance of the timer that you are using for the clock of the encoder
 void encoder_tim_interrupt(TIM_HandleTypeDef *htim, int * interrupt_flag, double * angles_array, double * speed){
 	double average_speed = 0;
-	if(interrupt_flag == 0){									//every 3 times request the angle from encoder
+	if(*interrupt_flag == 0){									//every 3 times request the angle from encoder
 		angles_array[0] = read_encoder(htim);
 		interrupt_flag ++;
 	}
 	else{
-		if(interrupt_flag == 1){									//every 3 times request the angle from encoder
+		if(*interrupt_flag == 1){									//every 3 times request the angle from encoder
 			angles_array[1] = read_encoder(htim);
-			interrupt_flag ++;
+			interrupt_flag++;
 		}
 		else{
-			if(interrupt_flag == 2){									//calculate the speed from the two last angles
-				double Speed = get_speed(angles_array[0], angles_array[1]);
+			if(*interrupt_flag == 2){									//calculate the speed from the two last angles
+				double Speed = get_speed_encoder(angles_array[0], angles_array[1],1000,0.4064);
 				if(abs(Speed - speed[8]) <= abs(speed[8] * 10)){			//exclude the wrong speeds
 					shift_array(speed, 15, Speed);
 					average_speed = dynamic_average(speed, 15);
 				}
-				interrupt_flag = 0;
+				*interrupt_flag = 0;
 			}
 		}
 	}
@@ -644,3 +707,13 @@ double dynamic_average(double *array, int size){
 
 	return average;
 }
+void calc_pot_value(int max, int min, int range, float * val0_100, int * val){
+	*val0_100 = (int)100-(abs(val[0] - min)*100/(range)); //val0_100 -->STEER --> 0 = SX | 100 = DX
+    if (val[0] <= min){
+      *val0_100 = 100;
+    }
+    if (val[0] >= max){
+      *val0_100 = 0;
+    }
+}
+
