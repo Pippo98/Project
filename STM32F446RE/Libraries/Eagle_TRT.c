@@ -534,8 +534,6 @@ double get_speed_encoder(float angle0, float angle1, int refresh, float wheel_di
 	return meters_per_second;
 }
 
-
-
 //function that calculate the average of all the numbers in one array
 double dynamic_average(double *array, int size){
 	double sum = 0;
@@ -690,8 +688,19 @@ int Get_Sentence(char * bufferRx, char (*sentences)[5], int len){
 		continue;
 	}
 }
-
 return -1;
+}
+
+//function to set the value of the potentiometer when the pedal is released
+void set_max(int * val, int * min1, int * max1, int * min2, int * max2){
+	&max1 = val[0];
+	&max2 = val[1];
+}
+
+//function to set the value of the potentiometer when the pedal is pressed
+void set_min(int * val, int * min1, int * max1, int * min2, int * max2){
+	&min1 = val[0];
+	&min2 = val[1];
 }
 
 

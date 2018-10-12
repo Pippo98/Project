@@ -55,6 +55,8 @@ void magn_accel_init();
   void print(UART_HandleTypeDef *huart, char* text);
 #endif
 void calc_pot_value(int max, int min, int range, float * val0_100, int * val);
+void set_min(int * val, int * min1, int * max1, int * min2, int * max2);
+void set_max(int * val, int * min1, int * max1, int * min2, int * max2);
 
 
 
