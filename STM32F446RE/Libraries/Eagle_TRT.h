@@ -8,37 +8,53 @@
 #include "stdlib.h"
 #include "string.h"
 
-
-
-void gyro_init();
-void magn_accel_init();
-void gyro_calib(SPI_HandleTypeDef *hspi, float * X_G_axis_offset, float * Y_G_axis_offset, float * Z_G_axis_offset);
-void accel_calib(SPI_HandleTypeDef *hspi, float * X_A_axis_offset, float * Y_A_axis_offset, float * Z_A_axis_offset);
-int LSMD9S0_check(SPI_HandleTypeDef *hspi);
-float LSMD9S0_read(SPI_HandleTypeDef *hspi,GPIO_TypeDef* GPIOx_InUse, uint16_t GPIO_Pin_InUse, GPIO_TypeDef* GPIOx_NotInUse, uint16_t GPIO_Pin_NotInUse, uint8_t REG_L, uint8_t REG_H, float kp);
-float LSM9DS0_calib(SPI_HandleTypeDef *hspi, GPIO_TypeDef* GPIOx_InUse, uint16_t GPIO_Pin_InUse, GPIO_TypeDef* GPIOx_NotInUse, uint16_t GPIO_Pin_NotInUse, uint8_t REG_L, uint8_t REG_H, float kp);
-int CAN_Send(CAN_HandleTypeDef *hcan,int id, uint8_t dataTx[], int size);
-int CAN_Receive(CAN_HandleTypeDef *hcan,uint8_t *DataRx, int size);
+//----------------GPS----------------//
 char* Get_Requested_Data(char * bufferRx, int data_pos, char * requested_data);
 int* Is_Valid(char * bufferRx, int  * fix, char * requested_data);
 int Get_Sentence(char * bufferRx, char (*sentences)[5], int len);
-void print(UART_HandleTypeDef *huart, char* text);
 void GPS_INIT(UART_HandleTypeDef *huart);
 void GPS_Awake();
+
+//----------------ENCODER----------------//
 #ifdef HAL_TIM_MODULE_ENABLED
 #include "stm32f4xx_hal_tim.h"
-double read_encoder(TIM_HandleTypeDef *TimerInstance);
-void encoder_tim_interrupt(TIM_HandleTypeDef *htim, int * interrupt_flag, double * angles_array, double * speed);
-int implausibility_check(TIM_HandleTypeDef *TimerInstance, int * Val0_100, int * Val1_100);
+	double read_encoder(TIM_HandleTypeDef *TimerInstance);
+	void encoder_tim_interrupt(TIM_HandleTypeDef *htim, int * interrupt_flag, double * angles_array, double * speed);
+	int implausibility_check(TIM_HandleTypeDef *TimerInstance, int * Val0_100, int * Val1_100);
 #endif
 int bin_dec(int* bin);
 double Power(int base, int expn);
 double get_speed_encoder(float angle0, float angle1, int refresh, float wheel_diameter);
 void shift_array(double *array, int size, double data);
 double dynamic_average(double *array, int size);
+
+//----------------IMU----------------//
+#ifdef HAL_SPI_MODULE_ENABLED
+#include "stm32f4xx_hal_spi.h"
+	void gyro_calib(SPI_HandleTypeDef *hspi, float * X_G_axis_offset, float * Y_G_axis_offset, float * Z_G_axis_offset);
+	void accel_calib(SPI_HandleTypeDef *hspi, float * X_A_axis_offset, float * Y_A_axis_offset, float * Z_A_axis_offset);
+	int LSMD9S0_check(SPI_HandleTypeDef *hspi);
+	float LSMD9S0_read(SPI_HandleTypeDef *hspi,GPIO_TypeDef* GPIOx_InUse, uint16_t GPIO_Pin_InUse, GPIO_TypeDef* GPIOx_NotInUse, uint16_t GPIO_Pin_NotInUse, uint8_t REG_L, uint8_t REG_H, float kp);
+	float LSM9DS0_calib(SPI_HandleTypeDef *hspi, GPIO_TypeDef* GPIOx_InUse, uint16_t GPIO_Pin_InUse, GPIO_TypeDef* GPIOx_NotInUse, uint16_t GPIO_Pin_NotInUse, uint8_t REG_L, uint8_t REG_H, float kp);
+	void gyro_read(SPI_HandleTypeDef *hspi,float * X_G_axis, float * Y_G_axis, float * Z_G_axis, float *X_G_axis_offset,float * Y_G_axis_offset,float * Z_G_axis_offset);
+	void accel_read(SPI_HandleTypeDef *hspi,float * X_A_axis, float * Y_A_axis, float * Z_A_axis,float *X_A_axis_offset,float * Y_A_axis_offset,float * Z_A_axis_offset);
+#endif
+void gyro_init();
+void magn_accel_init();
+
+//----------------CAN----------------//
+#ifdef HAL_CAN_MODULE_ENABLED
+#include "stm32f4xx_hal_can.h"
+  int CAN_Send(CAN_HandleTypeDef *hcan,int id, uint8_t dataTx[], int size);
+  int CAN_Receive(CAN_HandleTypeDef *hcan,uint8_t *DataRx, int size);
+#endif
+
+//----------------MISCELLANEOUS----------------//
+#ifdef HAL_UART_MODULE_ENABLED
+#include "stm32f4xx_hal_uart.h"
+  void print(UART_HandleTypeDef *huart, char* text);
+#endif
 void calc_pot_value(int max, int min, int range, float * val0_100, int * val);
-void gyro_read(SPI_HandleTypeDef *hspi,float * X_G_axis, float * Y_G_axis, float * Z_G_axis, float *X_G_axis_offset,float * Y_G_axis_offset,float * Z_G_axis_offset);
-void axel_read(SPI_HandleTypeDef *hspi,float * X_A_axis, float * Y_A_axis, float * Z_A_axis,float *X_A_axis_offset,float * Y_A_axis_offset,float * Z_A_axis_offset);
 
 
 
@@ -72,9 +88,6 @@ void axel_read(SPI_HandleTypeDef *hspi,float * X_A_axis, float * Y_A_axis, float
 // turn off output
 #define PMTK_SET_NMEA_OUTPUT_OFF "$PMTK314,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*28\r\n"
 
-// to generate your own sentences, check out the MTK command datasheet and use a checksum calculator
-// such as the awesome http://www.hhhh.org/wiml/proj/nmeaxor.html
-
 #define PMTK_LOCUS_STARTLOG  "$PMTK185,0*22"
 #define PMTK_LOCUS_STOPLOG "$PMTK185,1*23"
 #define PMTK_LOCUS_STARTSTOPACK "$PMTK001,185,3*3C"
@@ -100,9 +113,5 @@ void axel_read(SPI_HandleTypeDef *hspi,float * X_A_axis, float * Y_A_axis, float
 
 // how long to wait when we're looking for a response
 #define MAXWAITSENTENCE 10
-//////////////////sentence with speed in it are: GPRMA; GPRMC; GPVTG; GPVBW
-//////////////////GPVBW Water referenced and ground referenced speed data
-
-
 
 #endif
