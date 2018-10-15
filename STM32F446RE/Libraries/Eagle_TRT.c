@@ -7,6 +7,7 @@
  *you can't use all the functions unless you set up the CubeMx project correctly
 */
 
+
 //----------------ENCODER----------------//
 /*
  *To use encoder functions you have to initialize two timers, one for the clock and one to generate an interrupt
