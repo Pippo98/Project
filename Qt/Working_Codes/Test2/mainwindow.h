@@ -16,16 +16,7 @@ public:
     ~MainWindow();
 
 private slots:
-
-    void serial_received();
-
     void on_pushButton_clicked();
-
-    void on_radioButton_clicked(bool checked);
-
-    void serial_actions();
-
-    void on_doubleSpinBox_valueChanged(double arg1);
 
 private:
     Ui::MainWindow *ui;
