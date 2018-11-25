@@ -2,11 +2,12 @@
 #include "stm32f4xx_hal_conf.h"
 
 /*
+ *This library is developed from Eagle Trento Racing Team
+/*
  *Driver for all the stm in the Eagle_TRT veichle
  *incude this driver in the main file
  *you can't use all the functions unless you set up the CubeMx project correctly
 */
-
 
 //----------------ENCODER----------------//
 /*
