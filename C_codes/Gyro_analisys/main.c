@@ -1,20 +1,32 @@
+/*
+* I run this code on ubuntu 16.04
+*
+* This code takes in input a file named "log.txt" whith a log of real data from a sensor
+* The data are in a specific order: timestamp(ms), acccelerometer x, acccelerometer y, acccelerometer z, gyroscope x, gyroscope y, gyroscope z
+* The data are separated by a "\t" (tab) character, if you don't use this separator you have to change it in get_number() function
+* At the end of the file remember to use some "/" to let the program know that the file is finished
+* Unit and decimal must be separated by a dot
+*
+* The data on the file are of my smartphone sensor
+*/
+
 #include "stdlib.h"
 #include "stdio.h"
 #include <math.h>
 #include "time.h"
 #include "main.h"
 
-//data between 32767 -32768
-int counter = 0;
-
+//declaring the pointer to file
 FILE *fil;
 
 int main(){
 
+  //structures declared in main.h
   gyro_accel_stc gyro;
   gyro_accel_stc accel;
   angles_data_stc angle;
 
+  //initializing variables
   gyro.sensitivity = 131;
 
   accel.x_offset = 0;
@@ -30,21 +42,25 @@ int main(){
 
   accel.past_size = 100;
   gyro.past_size = 100;
+
+  //comment or uncomment this line to calculate the initial offset of the sensor
   //get_offset(&accel, &gyro);
 
+  //opening the file
   fil = fopen("log.txt", "r");
-
 
   while(1){
 
     //get_accel(&accel);
     //get_gyro(&gyro);
-    pointer = buffer;
+
+    //reading the data from the file
     get_data(&accel, &gyro, buffer);
 
-    //map_accel(&accel, 100);
-    //map_gyro(&gyro, 100);
+    //map_accel(&accel, 32768,  100);
+    //map_gyro (&gyro,  32768, 100);
 
+    //shiftinh the array and calculating the average of the members
     shift_array(accel.x_past, 100, accel.x);
     shift_array(accel.y_past, 100, accel.y);
     shift_array(accel.z_past, 100, accel.z);
@@ -59,6 +75,7 @@ int main(){
     dynamic_average(gyro.y_past, 100, &gyro.y);
     dynamic_average(gyro.z_past, 100, &gyro.z);
 
+    //doing some math to get the angle given the accelerometer and gyroscope data
     get_angle(&accel, &gyro, &angle);
 
     //printf("%f\t%f\t%f\t%f\t%f\t%f\t%f\r\n", timestamp, accel.x, accel.y, accel.z, gyro.x, gyro.y, gyro.z);
@@ -67,7 +84,6 @@ int main(){
 
     delay(dt + 10000);
 
-    counter ++;
   }
 
   return 0;
@@ -76,24 +92,32 @@ int main(){
 
 void get_angle(gyro_accel_stc * a, gyro_accel_stc * g, angles_data_stc * angle){
 
+  //calculating the pitch and roll only integrating the gyroscope data
   angle->pitch += (g->x / g->sensitivity)*dt;
   angle->roll  -= (g->y / g->sensitivity)*dt;
 
+  //calculating the total force on the object
+  //I multiplied and divided the values ecause the abs() function returns integers
   angle->force = abs(a->x * 1000000000) +
                  abs(a->y * 1000000000) +
                  abs(a->z * 1000000000);
   angle->force /= 1000000000;
 
+  //calculating the angle fron the accelerometer data
   angle->accel_pitch = atan2(a->y, a->z) * 180 / angle->PI;
   angle->accel_roll  = atan2(a->x, a->z) * 180 / angle->PI;
 
+  //using the complementary filter to make a better calculation
+  //you can use different constants (0.98, 0.02) to calibrate the filter
   angle->pitch = angle->pitch * 0.98 + angle->accel_pitch * 0.02;
   angle->roll  = angle->roll  * 0.98 + angle->accel_roll  * 0.02;
 
 }
 
+//function that calculates the initial offset
 void get_offset(gyro_accel_stc * a, gyro_accel_stc * g){
 
+  //change the a->past_size to modify how many iterations will be done
   for(int i = 0; i < a->past_size; i++){
 
     get_accel(a);
@@ -108,6 +132,7 @@ void get_offset(gyro_accel_stc * a, gyro_accel_stc * g){
 
   }
 
+  //calculate the offset by making the average of the values calculated
   dynamic_average(a->x_past, a->past_size, &a->x_offset);
   dynamic_average(a->y_past, a->past_size, &a->y_offset);
   dynamic_average(a->z_past, a->past_size, &a->z_offset);
@@ -117,6 +142,7 @@ void get_offset(gyro_accel_stc * a, gyro_accel_stc * g){
 
 }
 
+//fake function to generate test angles
 void get_gyro(gyro_accel_stc * g){
 
   g->x = (rand() % 201) - 100;
@@ -129,6 +155,7 @@ void get_gyro(gyro_accel_stc * g){
 
 }
 
+//fake function to generate test angles
 void get_accel(gyro_accel_stc * a){
 
   a->x = (rand() % 201)- 100;
@@ -141,6 +168,9 @@ void get_accel(gyro_accel_stc * a){
 
 }
 
+//function to map var between two values
+//min and max are the current minimum and maximum values that var could get
+//n_min and n_max are the new min and max values that var could get
 void map(double * var, double min, double max, double n_min, double n_max){
 
   double range, n_range;
@@ -152,20 +182,23 @@ void map(double * var, double min, double max, double n_min, double n_max){
 
 }
 
-void map_accel(gyro_accel_stc * a, int scale){
+//function to map only accelerometer data
+//scale determins the min and max values of the variable after this function is called
+void map_accel(gyro_accel_stc * a, int actual_scale, int scale){
 
-  map(&a->x, -32767, 32678, -scale, scale);
-  map(&a->y, -32767, 32678, -scale, scale);
-  map(&a->z, -32767, 32678, -scale, scale);
+  map(&a->x, -actual_scale, actual_scale, -scale, scale);
+  map(&a->y, -actual_scale, actual_scale, -scale, scale);
+  map(&a->z, -actual_scale, actual_scale, -scale, scale);
 
 }
 
+//function to map only gyroscope data
+//scale determins the min and max values of the variable after this function is called
+void map_gyro(gyro_accel_stc * g, int actual_scale, int scale){
 
-void map_gyro(gyro_accel_stc * g, int scale){
-
-  map(&g->x, -32767, 32678, -scale, scale);
-  map(&g->y, -32767, 32678, -scale, scale);
-  map(&g->z, -32767, 32678, -scale, scale);
+  map(&g->x, -actual_scale, actual_scale, -scale, scale);
+  map(&g->y, -actual_scale, actual_scale, -scale, scale);
+  map(&g->z, -actual_scale, actual_scale, -scale, scale);
 
 }
 
@@ -189,6 +222,7 @@ void shift_array(double * arr, int size, double data){
 
 }
 
+//d_time is expressed in microseconds
 void delay(int d_time){
   d_time += clock();
   while(d_time > clock());
@@ -197,12 +231,16 @@ void delay(int d_time){
 //read one line from the file
 void get_line(){
 
+  //I choose that the line can't be more than 100 characters long
+  //Change it if you need to
   for(int i = 0; i < 100; i++){
     buffer[i] = fgetc(fil);
+    //The end of the line is "\n" so if if finds that character breaks the loop
     if(buffer[i] == '\n'){
       break;
     }
 
+    //I used this character to let the program know that the file is finished
     if(buffer[i] == '/'){
       fclose(fil);
       printf("\n\nSimulation terminated\r\n\n\n");
@@ -217,19 +255,26 @@ double get_number(char * data, int start, double * num){
   char number[100];
   int index = 0;
 
+  //because I set that a line of the file can't be longer than 100 characters, also this loop can't do more iterations
   for(int i = start; i < 100; i++){
+    //I used the tab separator to divide the different data
     if(data[i] != '\t'){
       number[index] = data[i];
+      //clear the character just read
       data[i] = ' ';
       index ++;
     }
     else{
+      //clear also the "/t" character
       data[i] = ' ';
       break;
     }
   }
 
+  //atof function separates the unit from the decimals with a point so remember to use that instead a comma when you save data in the file
   *num = atof(number);
+  //returns the index of the last character read so the next time this function is
+  //called you could pass that index to it to start looking for numbers from the index passed
   return index;
 
 }
@@ -259,58 +304,3 @@ void get_data(gyro_accel_stc * a, gyro_accel_stc * g, char * data){
   start_index = get_number(data, start_index, &g->z);
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
