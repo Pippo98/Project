@@ -23,18 +23,10 @@ public:
     Graph(QObject *parent);
 
 public:
-    Q_INVOKABLE void set_graph_series(QAbstractSeries *series);
     Q_INVOKABLE void print_coord(QAbstractSeries *, int);
-    Q_INVOKABLE void update(QAbstractSeries *);
-    void set_val(QVector<double>);
-
-signals:
-    void lineChanged();
-    void vValueChanged();
 
 public:
      QVector<double> y_arr;
-     QVector<QPointF> points;
      QList<QVector<QPointF>> points_list;
      QXYSeries *mSeries;
      double x;

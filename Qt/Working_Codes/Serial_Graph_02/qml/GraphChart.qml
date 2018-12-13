@@ -19,7 +19,7 @@ ChartView {
 
     ValueAxis {
         id: axisY1
-        min: 20
+        min: 0
         max: 80
     }
 
@@ -32,7 +32,7 @@ ChartView {
     ValueAxis {
         id: axisX
         min: 0
-        max: 5000
+        max: 1000
     }
 
     LineSeries {
@@ -66,67 +66,66 @@ ChartView {
     }
     LineSeries {
         id: lineSeries5
-        name: "signal 4"
+        name: "signal 5"
         color: "black"
         axisX: axisX
         axisY: axisY1
     }
     LineSeries {
         id: lineSeries6
-        name: "signal 4"
+        name: "signal 6"
         color: "black"
         axisX: axisX
         axisY: axisY1
     }
     LineSeries {
         id: lineSeries7
-        name: "signal 4"
+        name: "signal 7"
         color: "black"
         axisX: axisX
         axisY: axisY1
     }
     LineSeries {
         id: lineSeries8
-        name: "signal 4"
+        name: "signal 8"
         color: "black"
         axisX: axisX
         axisY: axisY1
     }
     LineSeries {
         id: lineSeries9
-        name: "signal 4"
+        name: "signal 9"
         color: "black"
         axisX: axisX
         axisY: axisY1
     }
     LineSeries {
         id: lineSeries10
-        name: "signal 4"
+        name: "signal 10"
         color: "black"
         axisX: axisX
         axisY: axisY1
     }
-/*
-    Connections {
-        target: graph_qml
-        onValueChanged: {
-            console.log("valueChanged")
-            if(lineSeries1.count > points_number)
-                lineSeries1.remove(0);
-            lineSeries1.append(graph_qml.values.x, graph_qml.values.x)
-            axisX.min = lineSeries1.at(0).x
-            axisX.max = lineSeries1.at(lineSeries1.count-1).x
-        }
-    }
-*/
+
     Timer {
         id: refreshTimer
-        interval: 1 / 60 * 1000 // 60 Hz
+        interval: 1 / 40 * 1000
         running: true
         repeat: true
         onTriggered: {
-            graph.print_coord(chartView.series(0), 0)
+            graph.print_coord(chartView.series(0), 1)
             graph.print_coord(chartView.series(1), 1)
+            graph.print_coord(chartView.series(2), 2)
+            graph.print_coord(chartView.series(3), 3)
+            graph.print_coord(chartView.series(4), 4)
+            graph.print_coord(chartView.series(5), 5)
+            graph.print_coord(chartView.series(6), 6)
+            graph.print_coord(chartView.series(7), 7)
+            graph.print_coord(chartView.series(8), 8)
+
+            axisX.min = lineSeries1.at(0).x
+            axisX.max = lineSeries1.at(lineSeries1.count -1).x
+
         }
     }
 

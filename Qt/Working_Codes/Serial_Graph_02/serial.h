@@ -8,6 +8,7 @@ class Serial : public QObject
 {
     Q_OBJECT
 
+    //property called from the qml to setup the combo box
     Q_PROPERTY(QStringList detectPort READ detectPort WRITE setDetectPort NOTIFY detectPortChanged)
 
 public:
@@ -18,7 +19,7 @@ public:
 public:
     void connection();
     bool init();
-    bool deInit();
+    void deInit();
     void parseData();
     QStringList detectPort();
     void setDetectPort(QStringList);
@@ -35,6 +36,8 @@ public:
     QStringList serial_ports;
     QString serial_port_selected;
     int serial_port_index;
+    QSerialPort * serial_port;
+    bool is_port_opened;
 
 };
 

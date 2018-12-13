@@ -13,7 +13,7 @@ ApplicationWindow {
     height: 480
     color: "#424347"
     opacity: 1
-    title: "Graph"
+    title: "Multi Graph Plotter"
     //property alias Buttons: buttons
 
     Graph_qml{

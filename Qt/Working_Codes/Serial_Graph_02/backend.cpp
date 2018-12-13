@@ -7,14 +7,6 @@ static Serial s;
 Backend::Backend(QObject *parent) : QObject(parent){
 
 }
-
-void Backend::principal(){
-}
-
-void Backend::init_graph(){
-
-}
-
 void Backend::comboChanged(QString active_member, int index){
     s.serial_port_index = index;
     s.serial_port_selected = active_member;

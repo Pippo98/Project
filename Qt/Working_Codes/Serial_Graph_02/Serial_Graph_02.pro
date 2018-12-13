@@ -20,12 +20,12 @@ SOURCES += \
         main.cpp \
         graph.cpp \
         serial.cpp \
-        backend.cpp \
+        backend.cpp
 
 HEADERS += \
         graph.h \
         serial.h \
-        backend.h \
+        backend.h
 
 RESOURCES += qml.qrc
 

@@ -38,27 +38,6 @@ ColumnLayout {
         currentSelection: 1
         identifier: 0
     }
-/*
-    Text {
-        id: graphsText
-        color: "white"
-        opacity: 0.9
-        font.pointSize: 10
-        font.family: "Source Code Pro"
-        anchors.topMargin: 10
-        text: qsTr("Graphs: ")
-
-       Spin {
-           id: spin1
-           anchors.left: graphsText.right
-           anchors.centerIn: graphsText.Center
-
-           identifier: 0
-
-           minimum: 0
-           maximum: 10
-       }
-    }*/
 
     GraphPanel{
         id: graphPanel1
