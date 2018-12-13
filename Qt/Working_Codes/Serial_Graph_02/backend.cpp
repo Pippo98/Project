@@ -1,8 +1,10 @@
 #include "backend.h"
 #include "serial.h"
+#include "graph.h"
 #include <QDebug>
 
 static Serial s;
+static Graph g;
 
 Backend::Backend(QObject *parent) : QObject(parent){
 

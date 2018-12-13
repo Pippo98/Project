@@ -24,13 +24,22 @@ public:
 
 public:
     Q_INVOKABLE void print_coord(QAbstractSeries *, int);
+    Q_INVOKABLE void set_axis();
+    Q_INVOKABLE double get_y_max();
+    Q_INVOKABLE double get_y_min();
+    void upd(QString);
+
+signals:
+    void set_axisChanged();
 
 public:
      QVector<double> y_arr;
      QList<QVector<QPointF>> points_list;
      QXYSeries *mSeries;
      double x;
-     int max_points = 1000;
+     int max_points = 500;
+     int max_indexes[2];
+     int min_indexes[2];
 };
 
 #endif // GRAPH_H

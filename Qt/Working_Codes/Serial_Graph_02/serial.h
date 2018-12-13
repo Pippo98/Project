@@ -25,6 +25,7 @@ public:
     void setDetectPort(QStringList);
     void detect_graphs();
     QVector<double> get_val();
+    Q_INVOKABLE QString * is_opened();
 
 signals:
     void detectPortChanged();
@@ -37,7 +38,7 @@ public:
     QString serial_port_selected;
     int serial_port_index;
     QSerialPort * serial_port;
-    bool is_port_opened;
+    QString is_port_opened;
 
 };
 

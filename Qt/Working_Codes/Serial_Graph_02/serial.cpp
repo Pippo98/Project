@@ -8,7 +8,7 @@
 
 static QByteArray serial_data;
 
-static QTimer *tim1 = new QTimer();
+QTimer *tim1 = new QTimer;
 static Serial *ser = new Serial(nullptr);
 
 static QTextStream out(stdout);
@@ -52,11 +52,15 @@ void Serial::parseData(){
                 arr[i] = number_arr[i].toDouble();
             }
         }
-        qDebug() << arr;
     }
     else{
         qDebug() << "wrong";
     }
+}
+
+QString * Serial::is_opened(){
+//    graph.port_opened = is_port_opened;
+    return &is_port_opened;
 }
 
 //initialization
@@ -150,7 +154,7 @@ bool Serial::init(){
 
     if(serial_port->open(QSerialPort::ReadWrite)){
         result = true;
-        is_port_opened = true;
+        graph.upd("O");
     }
     else{
         qDebug() << "Cannot Open Serial Port";
@@ -168,9 +172,9 @@ void Serial::deInit(){
     QObject::disconnect(tim1, &QTimer::timeout, nullptr, nullptr);
     QObject::disconnect(serial_port, &QSerialPort::readyRead, nullptr, nullptr);
 
-    serial_port->close();
+    graph.upd("C");
 
-    is_port_opened = false;
+    serial_port->close();
 
     qDebug() << "Serial Port Closed";
 }
