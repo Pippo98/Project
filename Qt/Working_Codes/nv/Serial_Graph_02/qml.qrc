@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/main.qml</file>
+        <file>qml/Buttons.qml</file>
+        <file>qml/ControlPanel.qml</file>
+        <file>qml/GraphChart.qml</file>
+        <file>qml/Spin.qml</file>
+        <file>qml/Combo.qml</file>
+        <file>qml/GraphPanel.qml</file>
+    </qresource>
+</RCC>
