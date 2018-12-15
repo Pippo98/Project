@@ -122,15 +122,16 @@ ChartView {
             graph.print_coord(chartView.series(1), 1)
             graph.print_coord(chartView.series(2), 2)
             graph.print_coord(chartView.series(3), 3)
-            graph.print_coord(chartView.series(4), 4)/*
+            graph.print_coord(chartView.series(4), 4)
             graph.print_coord(chartView.series(5), 5)
             graph.print_coord(chartView.series(6), 6)
             graph.print_coord(chartView.series(7), 7)
             graph.print_coord(chartView.series(8), 8)
-            graph.print_coord(chartView.series(9), 9)*/
+            graph.print_coord(chartView.series(9), 9)
 
-            axisX.min = lineSeries1.at(0).x
-            axisX.max = lineSeries1.at(lineSeries1.count -1).x
+            //axisX.min = lineSeries1.at(0).x
+            //axisX.max = lineSeries1.at(lineSeries1.count -1).x
+            graph.get_Y_axis(chartView.axisX(series(0)), 0, 0)
         }
     }
 
@@ -141,8 +142,7 @@ ChartView {
         repeat: true
         onTriggered: {
             graph.set_axis()
-            axisY.min = graph.get_y_min() - 10
-            axisY.max = graph.get_y_max() + 10
+            graph.get_Y_axis(chartView.axisY(series(0)), 0, 1)
         }
     }
 

@@ -21,8 +21,7 @@ public:
 public:
     Q_INVOKABLE void print_coord(QAbstractSeries *, int);
     Q_INVOKABLE void set_axis();
-    Q_INVOKABLE double get_y_max();
-    Q_INVOKABLE double get_y_min();
+    Q_INVOKABLE void get_axis_values(QAbstractAxis *, int, int);
     void upd(QString);
 
 signals:

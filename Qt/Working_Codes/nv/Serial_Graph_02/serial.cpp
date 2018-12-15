@@ -1,4 +1,4 @@
-#include <QtSerialPort>
+#include <QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QTextStream>
 #include <QObject>
@@ -10,6 +10,7 @@ static QByteArray serial_data;
 
 QTimer *tim1 = new QTimer;
 static Serial *ser = new Serial(nullptr);
+//static QSerialPort *ser = nullptr;
 
 static QTextStream out(stdout);
 
@@ -17,6 +18,8 @@ static Backend backend;
 static Graph graph;
 
 static bool done_calibration = false;
+static int iterations = 0;
+static double average = 0;
 
 static QVector<double> arr;
 
@@ -52,7 +55,6 @@ void Serial::parseData(){
                 arr[i] = number_arr[i].toDouble();
             }
         }
-        //qDebug() << serial_data;
     }
     else{
         qDebug() << "wrong";
@@ -71,47 +73,35 @@ QString * Serial::is_opened(){
 void Serial::detect_graphs(){
 
     int counter = 0;
-    int iterations = 0;
-    float average = 0;
 
-    while(iterations < 20){
-        for(int j = 0; j < serial_data.length(); j++){
-            if(serial_data[j] == '\t' || serial_data[j] == '\n' || serial_data[j] == ' '){
-                counter ++;
-            }
+    for(int j = 0; j <  serial_data.length(); j++){
+        if(serial_data[j] == '\t' || serial_data[j] == '\n' || serial_data[j] == ' '){
+            counter ++;
         }
-        average += counter;
-        counter = 0;
-        iterations ++;
     }
-    average /= 20;
+    average += counter;
 
-    //setting the variables
-    backend.total_graphs = int(average);
-
-    done_calibration = true;
-
-    //disconnect because this function is only for initialization
-    //QObject::disconnect(serial_port, &QSerialPort::readyRead, nullptr, nullptr);
+    if(iterations == 19){
+        average /= 20;
+        average = round(average);
+        backend.total_graphs = int(average);
+        done_calibration = true;
+    }
 }
 
 //connectrion needed
 void Serial::connection(){
-
     //connection to read the buffer
     QObject::connect(serial_port, &QSerialPort::readyRead, ser, [=]{
         serial_data = serial_port->readLine();
-        //initialization to detect how many graphs need to be visualized
-        if(!done_calibration)
-            detect_graphs();
-    });
-
-    //timer to set the refresh rate of the plotting data
-    tim1->setInterval(5);
-    tim1->start();
-    QObject::connect(tim1, &QTimer::timeout, [=]{
+        //qDebug() << serial_data;
         parseData();
-        clearSerial();
+        qDebug() << arr;
+        //initialization to detect how many graphs need to be visualized
+        if(!done_calibration){
+            detect_graphs();
+            iterations ++;
+        }
     });
 }
 
@@ -120,8 +110,10 @@ void Serial::connection(){
 QStringList Serial::detectPort(){
     const auto ser = QSerialPortInfo::availablePorts();
     QStringList port_list;
+
     port_list.append("      ");
-    for(const QSerialPortInfo &ser_ : ser){
+
+    for(const QSerialPortInfo &ser_ : ser)    {
         port_list.append(ser_.portName());
     }
 
@@ -148,14 +140,18 @@ bool Serial::init(){
     qDebug() << serial_port_selected;
 
     serial_port->setPortName(serial_port_selected);
-    serial_port->setBaudRate(QSerialPort::Baud115200);
+    //serial_port->setBaudRate(QSerialPort::Baud115200);
+    serial_port->setBaudRate(250000);
     serial_port->setDataBits(QSerialPort::Data8);
     serial_port->setFlowControl(QSerialPort::NoFlowControl);
-    serial_port->setParity(QSerialPort::OddParity);
+    serial_port->setParity(QSerialPort::NoParity);
 
     if(serial_port->open(QSerialPort::ReadWrite)){
         result = true;
         graph.upd("O");
+        done_calibration = false;
+        iterations = 0;
+        average = 0;
     }
     else{
         qDebug() << "Cannot Open Serial Port";
