@@ -36,9 +36,9 @@ ColumnLayout {
         currentSelection: 1
         identifier: 0
     }
-
+/*
     GraphPanel{
         id: graphPanel1
-    }
+    }*/
 
 }

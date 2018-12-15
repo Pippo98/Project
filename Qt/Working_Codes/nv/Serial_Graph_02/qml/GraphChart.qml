@@ -21,6 +21,12 @@ ChartView {
         min: 0
         max: 80
     }
+    ValueAxis {
+        id: axisY2
+        min: 0
+        max: 80
+        visible: true
+    }
 
     ValueAxis {
         id: axisX
@@ -28,17 +34,6 @@ ChartView {
         max: 1000
         gridVisible: false
     }
-/*
-    ScatterSeries {
-        id: scatter1
-        markerShape: "MarkerShapeCircle"
-        markerSize: 4
-        borderWidth: 0
-        name: "signal 8"
-        color: "blue"
-        axisX: axisX
-        axisY: axisY
-    }*/
 
     LineSeries {
         id: lineSeries1
@@ -46,6 +41,7 @@ ChartView {
         color: "red"
         axisX: axisX
         axisY: axisY
+        useOpenGL: true
     }
 
     LineSeries {
@@ -54,6 +50,7 @@ ChartView {
         color: "green"
         axisX: axisX
         axisY: axisY
+        useOpenGL: true
     }
     LineSeries {
         id: lineSeries3
@@ -61,6 +58,7 @@ ChartView {
         color: "blue"
         axisX: axisX
         axisY: axisY
+        useOpenGL: true
     }
     LineSeries {
         id: lineSeries4
@@ -68,6 +66,7 @@ ChartView {
         color: "black"
         axisX: axisX
         axisY: axisY
+        useOpenGL: true
     }
     LineSeries {
         id: lineSeries5
@@ -75,6 +74,7 @@ ChartView {
         color: "black"
         axisX: axisX
         axisY: axisY
+        useOpenGL: true
     }
     LineSeries {
         id: lineSeries6
@@ -82,6 +82,7 @@ ChartView {
         color: "black"
         axisX: axisX
         axisY: axisY
+        useOpenGL: true
     }
     LineSeries {
         id: lineSeries7
@@ -89,6 +90,7 @@ ChartView {
         color: "black"
         axisX: axisX
         axisY: axisY
+        useOpenGL: true
     }
     LineSeries {
         id: lineSeries8
@@ -96,6 +98,7 @@ ChartView {
         color: "black"
         axisX: axisX
         axisY: axisY
+        useOpenGL: true
     }
     LineSeries {
         id: lineSeries9
@@ -103,6 +106,7 @@ ChartView {
         color: "black"
         axisX: axisX
         axisY: axisY
+        useOpenGL: true
     }
     LineSeries {
         id: lineSeries10
@@ -110,6 +114,7 @@ ChartView {
         color: "black"
         axisX: axisX
         axisY: axisY
+        useOpenGL: true
     }
 
     Timer {
@@ -131,7 +136,7 @@ ChartView {
 
             //axisX.min = lineSeries1.at(0).x
             //axisX.max = lineSeries1.at(lineSeries1.count -1).x
-            graph.get_Y_axis(chartView.axisX(series(0)), 0, 0)
+            graph.get_axis_values(chartView.axisX(series(0)), 0, 0, 1)
         }
     }
 
@@ -142,7 +147,9 @@ ChartView {
         repeat: true
         onTriggered: {
             graph.set_axis()
-            graph.get_Y_axis(chartView.axisY(series(0)), 0, 1)
+            graph.get_axis()
+            graph.get_axis_values(chartView.axisY(series(0)), 0, 1, 0)
+            //graph.get_axis_values(chartView.axisY(series(1)), 1, 1, 0)
         }
     }
 

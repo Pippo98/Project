@@ -21,7 +21,8 @@ public:
 public:
     Q_INVOKABLE void print_coord(QAbstractSeries *, int);
     Q_INVOKABLE void set_axis();
-    Q_INVOKABLE void get_axis_values(QAbstractAxis *, int, int);
+    Q_INVOKABLE void get_axis_values(QAbstractAxis *, int, int, int);
+    Q_INVOKABLE void get_axis();
     void upd(QString);
 
 signals:
@@ -35,6 +36,8 @@ public:
      int max_points = 200;
      int max_indexes[2];
      int min_indexes[2];
+     int y_max_indexes[100];
+     int y_min_indexes[100];
      int total_graphs;
 };
 
