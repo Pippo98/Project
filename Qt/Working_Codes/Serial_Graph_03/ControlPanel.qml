@@ -1,0 +1,59 @@
+import QtQuick 2.11
+import QtQuick.Layouts 1.3
+import QtQuick.Controls 2.4
+import QtQuick.Controls.Styles 1.4
+
+Item {
+    id: item1
+    Column {
+        id: column
+
+        ComboBox {
+            id: comboBox
+
+            property variant members
+            property int currentSelection: 0
+            property int identfier: 0
+
+            model: members
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            onActivated: {
+                backend.comboChanged(currentText, currentIndex, identfier)
+                textArea.text = serial.portInfo(currentText)
+            }
+            Timer{
+                running: true
+                repeat: true
+                interval: 500
+                onTriggered: {comboBox.members = serial.detectPort()}
+            }
+        }
+
+        TextArea {
+            id: textArea
+            height: 80
+            clip: false
+            enabled: false
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+        }
+
+        Button {
+            id: button
+
+            property variant items: ["Close", "Open"]
+            property int currentSelection: 1
+            property int identifier: 0
+
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+            text: items[currentSelection]
+            onClicked: {
+                currentSelection = (currentSelection + 1) % items.length
+                backend.buttonClicked(identifier, currentSelection)
+            }
+        }
+    }
+
+}
