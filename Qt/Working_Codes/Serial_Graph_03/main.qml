@@ -17,9 +17,6 @@ ApplicationWindow {
 
         Page2Form {
         }
-
-        Page3Form{
-        }
     }
 
     footer: TabBar {
@@ -31,9 +28,6 @@ ApplicationWindow {
         }
         TabButton {
             text: "Graphs"
-        }
-        TabButton {
-            text: "Terminal"
         }
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.7.2, 2019-01-03T11:37:46. -->
+<!-- Written by QtCreator 4.7.2, 2019-01-04T14:37:42. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -58,7 +58,10 @@
    <valuelist type="QVariantList" key="ClangCodeModel.CustomCommandLineKey"/>
    <value type="bool" key="ClangCodeModel.UseGlobalConfig">true</value>
    <value type="bool" key="ClangTools.BuildBeforeAnalysis">false</value>
-   <valuelist type="QVariantList" key="ClangTools.SelectedDirs"/>
+   <value type="QString" key="ClangTools.DiagnosticConfig">Builtin.TidyAndClazy</value>
+   <valuelist type="QVariantList" key="ClangTools.SelectedDirs">
+    <value type="QString">/media/usr/label/Programmazione/Qt/Serial_Graph_03/Serial_Graph_03.pro</value>
+   </valuelist>
    <valuelist type="QVariantList" key="ClangTools.SelectedFiles"/>
    <valuelist type="QVariantList" key="ClangTools.SuppressedDiagnostics"/>
    <value type="bool" key="ClangTools.UseGlobalSettings">true</value>

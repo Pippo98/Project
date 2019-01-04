@@ -20,6 +20,9 @@ public:
     explicit graph();
     void connection();
     void deInit();
+    void managePoints();
+
+    Q_INVOKABLE double getBarValue();
 
 public slots:
     void printCoord(QAbstractSeries *, int);
@@ -31,9 +34,6 @@ public:
     QString portOpened;
     QXYSeries *mSeries;
     QValueAxis *valueAxis;
-
-    QList<QVector<QPointF>> pointsList;
-    QVector<double> dataArray;
 
     int totalGraphs;
     int maxPoints = 400;

@@ -14,16 +14,23 @@ Page {
     Connections{
         target: serial
         onDataChanged:{
-            textArea.text = data
             console.log("qml slot")
+            textArea.text = data
         }
     }
 
-    TextArea {
+    Timer{
+        id: textTim
+        interval: 5
+        repeat: true
+        running: true
+        onTriggered: textArea.text = serial.getText()
+    }
+
+    Text {
         id: textArea
-        //property string txt
-        enabled: true
-        font.family: "Source Code Pro"
+        //font.family: "Source Code Pro"
+        color: "white"
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.left: parent.left

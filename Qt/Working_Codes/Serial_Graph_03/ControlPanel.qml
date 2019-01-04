@@ -25,7 +25,7 @@ Item {
             Timer{
                 running: true
                 repeat: true
-                interval: 500
+                interval: 1000
                 onTriggered: {comboBox.members = serial.detectPort()}
             }
         }
@@ -54,6 +54,14 @@ Item {
                 backend.buttonClicked(identifier, currentSelection)
             }
         }
-    }
 
+        Switch{
+            id: logSwitch
+            checked: false
+            text: "Log Enable"
+            onCheckedChanged: {
+                backend.logSwitchChanged(checked);
+            }
+        }
+    }
 }

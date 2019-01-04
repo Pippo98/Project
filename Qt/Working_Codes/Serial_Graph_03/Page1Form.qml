@@ -10,22 +10,13 @@ Page {
     height: 400
 
     header: Label {
+        id: header
         text: qsTr("Control Panel")
+        horizontalAlignment: Text.AlignHCenter
+        //fontSizeMode: Text.FixedSize
         font.pixelSize: Qt.application.font.pixelSize * 2
         padding: 10
     }
-/*
-    Connections{
-        target: backend
-        onPortStateChanged: {
-            if(state == 0){
-                switchColumn.stateVisible = false
-            }
-            else{
-                switchColumn.stateVisible = true
-            }
-        }
-    }*/
 
     Connections{
         target: serial
@@ -37,11 +28,10 @@ Page {
     ControlPanel{
         id: controlPanel
         width: 145
-        height: 343
+        anchors.bottom: parent.bottom
         anchors.top: parent.top
         anchors.topMargin: 6
         anchors.left: parent.left
-        anchors.leftMargin: 0
     }
 
 
@@ -52,20 +42,50 @@ Page {
         property bool stateVisible: false
         property int members: 10
         spacing: 1
-        //visible: stateVisible
-        /*
-        Bars{
-            width: 150
-        }*/
 
-        Repeater{
-            model: switchColumn.members
-            Switch {
-                text: "Graph " + index
-                checked: true
-                onCheckedChanged: {
-                    backend.switchCanged(index, checked)
-                }
+        Switch{
+            text: "Frontal"
+            checked: true
+            onCheckedChanged: {
+                backend.switchChanged(0, checked)
+            }
+            Component.onCompleted: {
+                backend.switchChanged(100, 1)
+            }
+        }
+        Switch{
+            text: "Pedals"
+            checked: true
+            onCheckedChanged: {
+                backend.switchChanged(1, checked)
+            }
+        }
+        Switch{
+            text: "ECU"
+            checked: true
+            onCheckedChanged: {
+                backend.switchChanged(2, checked)
+            }
+        }
+        Switch{
+            text: "Inverter"
+            checked: true
+            onCheckedChanged: {
+                backend.switchChanged(3, checked)
+            }
+        }
+        Switch{
+            text: "Low Voltage"
+            checked: true
+            onCheckedChanged: {
+                backend.switchChanged(4, checked)
+            }
+        }
+        Switch{
+            text: "High Voltage"
+            checked: true
+            onCheckedChanged: {
+                backend.switchChanged(5, checked)
             }
         }
     }

@@ -6,6 +6,7 @@ static serial s;
 static graph  g;
 
 static QVector<int> requestedGraphs;
+static bool logEnabled = false;
 
 backend::backend(QObject *parent) : QObject(parent)
 {
@@ -41,7 +42,18 @@ void backend::buttonClicked(int id, int value){
     }
 }
 
-void backend::switchCanged(int id, int value){
+void backend::logSwitchChanged(int value){
+    if(value == 1){
+        logEnabled = true;
+    }
+    else{
+        logEnabled = false;
+    }
+
+    s.setLogState(logEnabled);
+}
+
+void backend::switchChanged(int id, int value){
 
     while(requestedGraphs.count() <= id){
         requestedGraphs.append(1);

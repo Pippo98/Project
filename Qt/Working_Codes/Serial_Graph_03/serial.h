@@ -23,20 +23,21 @@ public:
     void connection();
     void detectGraphs();
     void parseData();
-    QVector<double> getVal();
+    QVector<double> getPointsData();
     bool isSerialOpened();
 
-    void setText(QString);
-    void getText();
+    void setText();
     void setPrint_data(QString);
     QString print_data();
 
+    void setLogState(bool);
+
     void parseCan();
-    QVector<double> getCan();
 
 signals:
     void print_dataChanged();
     void dataChanged(QString data);
+    //void dataChanged();
     void graphsChanged(int number);
     void portStateChanged(int state);
 
@@ -44,7 +45,7 @@ public slots:
     void manageData();
     QString portInfo(QString port);
     QStringList detectPort();
-    //QString getText();
+    QString getText();
 
 public:
     int baudRateSelected;
@@ -54,8 +55,6 @@ public:
     QSerialPort * serialPort;
     QStringList serialPorts;
     QByteArray serialData;
-
-    QVector<double> canArr;
 
 };
 

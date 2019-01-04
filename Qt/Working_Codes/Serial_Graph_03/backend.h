@@ -19,7 +19,8 @@ signals:
 public slots:
     void buttonClicked(int, int);
     void comboChanged(QString, int, int);
-    void switchCanged(int, int);
+    void switchChanged(int, int);
+    void logSwitchChanged(int);
 };
 
 #endif // BACKEND_H

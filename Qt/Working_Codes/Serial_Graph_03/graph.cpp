@@ -17,7 +17,8 @@ static QTimer *tim1 = new QTimer();
 
 static double x;
 
-static int sdfgs;
+static QList<QVector<QPointF>> pointsList;
+static QVector<double> dataArray;
 
 static serial s;
 static backend b;
@@ -39,34 +40,40 @@ void graph::connection(){
     });
 }
 
-//this function updates the values of the line series in the qml
-//series is an abstract value that points to the qml line series
-//using mSeries is possible to assign c++ values to qml series
-void graph::printCoord(QAbstractSeries * series, int index){
+double graph::getBarValue(){
+    if(s.isSerialOpened() == true && dataArray.count() > 0){
+        if(dataArray.count() > 0){
+            return dataArray.at(0);
+        }
+    }
+    return 0;
+}
 
-    dataArray = s.getVal();
+void graph::managePoints(){
+    dataArray = s.getPointsData();
 
     while(pointsList.count() < 10){
         QVector<QPointF> points;
         pointsList.append(points);
     }
 
+    for(int i = 0; i < dataArray.count(); i++){
+        pointsList[i].append(QPointF(x, dataArray[i]));
+        if(x > 2){
+            pointsList[i].remove(0);
+        }
+    }
+}
+
+//this function updates the values of the line series in the qml
+//series is an abstract value that points to the qml line series
+//using mSeries is possible to assign c++ values to qml series
+void graph::printCoord(QAbstractSeries * series, int index){
     if(s.isSerialOpened() == true && dataArray.count() > 0){
         if(index < pointsList.count() && index < dataArray.count()){
             if(series){
-                pointsList[index].append(QPointF(x, dataArray[index]));
-                if(maxPoints < pointsList[index].count()){
-                    pointsList[index].remove(0);
-                }
                 mSeries = static_cast<QXYSeries *>(series);
-                mSeries->replace(pointsList[index]);
-
-                if(b.getRequestedGraphs()[index] == 1){
-                    mSeries->setVisible(true);
-                }
-                else{
-                    mSeries->setVisible(false);
-                }
+                mSeries->replace(pointsList.at(index));
             }
         }
     }
@@ -136,8 +143,8 @@ void graph::getAxisValues(QAbstractAxis * axis, int index, int x_y, int single_t
                 min = pointsList.at(index).at(yMinIndexes[index]).y();
                 max = pointsList.at(index).at(yMaxIndexes[index]).y();
 
-                axis->setMin(min);
-                axis->setMax(max);
+                axis->setMin(min * 1.1);
+                axis->setMax(max * 1.1);
             }
         }
         //same range for all the grahs in the chart

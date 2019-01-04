@@ -12,27 +12,30 @@ ChartView {
     backgroundRoundness: 10
 
     ValueAxis {
-        id: axisY
-        min: 0
-        max: 80
-    }
-    ValueAxis {
         id: axisY1
         min: 0
         max: 80
         visible: true
+        tickCount: 7
+        labelsAngle: -45
     }
     ValueAxis {
         id: axisY2
         min: 0
         max: 80
         visible: true
+        gridVisible: false
+        labelsAngle: -45
+        tickCount: 7
     }
     ValueAxis {
         id: axisY3
         min: 0
         max: 80
-        visible: false
+        visible: true
+        gridVisible: false
+        labelsAngle: -45
+        tickCount: 7
     }
     ValueAxis {
         id: axisY4
@@ -89,8 +92,7 @@ ChartView {
         name: "signal 1"
         color: "red"
         axisX: axisX
-        axisY: axisY
-
+        axisY: axisY1
     }
 
     LineSeries {
@@ -99,7 +101,6 @@ ChartView {
         color: "green"
         axisX: axisX
         axisY: axisY2
-
     }
     LineSeries {
         id: lineSeries3
@@ -131,7 +132,6 @@ ChartView {
         color: "black"
         axisX: axisX
         axisY: axisY6
-
     }
     LineSeries {
         id: lineSeries7
@@ -167,18 +167,9 @@ ChartView {
         running: true
         repeat: true
         onTriggered: {
-
-            graph.printCoord(chartView.series(0), 0)
-            graph.printCoord(chartView.series(1), 1)
-            graph.printCoord(chartView.series(2), 2)
-            graph.printCoord(chartView.series(3), 3)
-            graph.printCoord(chartView.series(4), 4)
-            graph.printCoord(chartView.series(5), 5)
-            graph.printCoord(chartView.series(6), 6)
-            graph.printCoord(chartView.series(7), 7)
-            graph.printCoord(chartView.series(8), 8)
-            graph.printCoord(chartView.series(9), 9)
-
+            for(var i = 0; i < 10; i++){
+                graph.printCoord(chartView.series(i), i);
+            }
             graph.getAxisValues(chartView.axisX(series(0)), 0, 0, 0)
         }
     }
@@ -191,17 +182,9 @@ ChartView {
         onTriggered: {
             graph.setGeneralYRange()
             graph.setSpecificYRange()
-
-            graph.getAxisValues(chartView.axisY(series(0)), 0, 1, 0)
-            graph.getAxisValues(chartView.axisY(series(1)), 1, 1, 0)
-            graph.getAxisValues(chartView.axisY(series(2)), 2, 1, 0)
-            graph.getAxisValues(chartView.axisY(series(3)), 3, 1, 0)
-            graph.getAxisValues(chartView.axisY(series(4)), 4, 1, 0)
-            graph.getAxisValues(chartView.axisY(series(5)), 5, 1, 0)
-            graph.getAxisValues(chartView.axisY(series(6)), 6, 1, 0)
-            graph.getAxisValues(chartView.axisY(series(7)), 7, 1, 0)
-            graph.getAxisValues(chartView.axisY(series(8)), 8, 1, 0)
-            graph.getAxisValues(chartView.axisY(series(9)), 9, 1, 0)
+            for(var i = 0; i < 10; i ++){
+                graph.getAxisValues(chartView.axisY(series(i)), i, 1, 0);
+            }
         }
     }
 }
