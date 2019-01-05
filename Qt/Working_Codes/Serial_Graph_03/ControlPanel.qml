@@ -7,7 +7,6 @@ Item {
     id: item1
     Column {
         id: column
-
         ComboBox {
             id: comboBox
 
@@ -32,11 +31,13 @@ Item {
 
         TextArea {
             id: textArea
-            height: 80
+            height: 100
+            width: parent.width
             clip: false
             enabled: false
             anchors.left: parent.left
             anchors.leftMargin: 10
+            wrapMode: TextEdit.Wrap
         }
 
         Button {
@@ -61,6 +62,16 @@ Item {
             text: "Log Enable"
             onCheckedChanged: {
                 backend.logSwitchChanged(checked);
+            }
+        }
+
+        Switch{
+            id: canModeSwitch
+            checked: true
+            text: "CAN Mode"
+            onCheckedChanged: {
+                serial.setCanMode(checked)
+                switchColumn.visible = checked
             }
         }
     }

@@ -81,6 +81,67 @@ ChartView {
     }
 
     ValueAxis {
+        id: axisY11
+        min: 0
+        max: 80
+        visible: false
+    }
+    ValueAxis {
+        id: axisY12
+        min: 0
+        max: 80
+        visible: false
+    }
+    ValueAxis {
+        id: axisY13
+        min: 0
+        max: 80
+        visible: false
+    }
+    ValueAxis {
+        id: axisY14
+        min: 0
+        max: 80
+        visible: false
+    }
+    ValueAxis {
+        id: axisY15
+        min: 0
+        max: 80
+        visible: false
+    }
+    ValueAxis {
+        id: axisY16
+        min: 0
+        max: 80
+        visible: false
+    }
+    ValueAxis {
+        id: axisY17
+        min: 0
+        max: 80
+        visible: false
+    }
+    ValueAxis {
+        id: axisY18
+        min: 0
+        max: 80
+        visible: false
+    }
+    ValueAxis {
+        id: axisY19
+        min: 0
+        max: 80
+        visible: false
+    }
+    ValueAxis {
+        id: axisY20
+        min: 0
+        max: 80
+        visible: false
+    }
+
+    ValueAxis {
         id: axisX
         min: 0
         max: 1000
@@ -162,12 +223,83 @@ ChartView {
         axisY: axisY10
     }
 
+    LineSeries {
+        id: lineSeries11
+        name: "signal 10"
+        color: "black"
+        axisX: axisX
+        axisY: axisY11
+    }
+    LineSeries {
+        id: lineSeries12
+        name: "signal 10"
+        color: "black"
+        axisX: axisX
+        axisY: axisY12
+    }
+    LineSeries {
+        id: lineSeries13
+        name: "signal 10"
+        color: "black"
+        axisX: axisX
+        axisY: axisY13
+    }
+    LineSeries {
+        id: lineSeries14
+        name: "signal 10"
+        color: "black"
+        axisX: axisX
+        axisY: axisY14
+    }
+    LineSeries {
+        id: lineSeries15
+        name: "signal 10"
+        color: "black"
+        axisX: axisX
+        axisY: axisY15
+    }
+    LineSeries {
+        id: lineSeries16
+        name: "signal 10"
+        color: "black"
+        axisX: axisX
+        axisY: axisY16
+    }
+    LineSeries {
+        id: lineSeries17
+        name: "signal 10"
+        color: "black"
+        axisX: axisX
+        axisY: axisY17
+    }
+    LineSeries {
+        id: lineSeries18
+        name: "signal 10"
+        color: "black"
+        axisX: axisX
+        axisY: axisY18
+    }
+    LineSeries {
+        id: lineSeries19
+        name: "signal 10"
+        color: "black"
+        axisX: axisX
+        axisY: axisY19
+    }
+    LineSeries {
+        id: lineSeries20
+        name: "signal 10"
+        color: "black"
+        axisX: axisX
+        axisY: axisY20
+    }
+
     Timer {
         interval: 1 / 60 * 1000
         running: true
         repeat: true
         onTriggered: {
-            for(var i = 0; i < 10; i++){
+            for(var i = 0; i < 20; i++){
                 graph.printCoord(chartView.series(i), i);
             }
             graph.getAxisValues(chartView.axisX(series(0)), 0, 0, 0)
@@ -182,7 +314,7 @@ ChartView {
         onTriggered: {
             graph.setGeneralYRange()
             graph.setSpecificYRange()
-            for(var i = 0; i < 10; i ++){
+            for(var i = 0; i < 20; i ++){
                 graph.getAxisValues(chartView.axisY(series(i)), i, 1, 0);
             }
         }

@@ -18,44 +18,49 @@ public:
     //Q_PROPERTY(QString getText READ getText WRITE setText)
     Q_PROPERTY(QString print_data READ print_data WRITE setPrint_data NOTIFY print_dataChanged)
 
-    bool init();
+    QString print_data();
+    QVector<double> getPointsData();
+
     void deInit();
+    void setText();
+    void parseCan();
+    void parseData();
     void connection();
     void detectGraphs();
-    void parseData();
-    QVector<double> getPointsData();
-    bool isSerialOpened();
-
-    void setText();
-    void setPrint_data(QString);
-    QString print_data();
-
     void setLogState(bool);
+    void setPrint_data(QString);
+    void updateGraphsNames();
+    void restartSequence();
 
-    void parseCan();
+    bool init();
+    bool isSerialOpened();
 
 signals:
     void print_dataChanged();
     void dataChanged(QString data);
-    //void dataChanged();
     void graphsChanged(int number);
     void portStateChanged(int state);
 
 public slots:
-    void manageData();
-    QString portInfo(QString port);
-    QStringList detectPort();
     QString getText();
+    QStringList detectPort();
+    QString portInfo(QString port);
+
+    bool getCanMode();
+    void setCanMode(int);
+    void manageFunctions();
+    void setGraphsRequested(QVector<int>);
 
 public:
     int baudRateSelected;
     int serialPortIndex;
 
+    QVector<int> requestedGraphs;
+
     QString serialPortSelected;
     QSerialPort * serialPort;
     QStringList serialPorts;
     QByteArray serialData;
-
 };
 
 #endif // SERIAL_H

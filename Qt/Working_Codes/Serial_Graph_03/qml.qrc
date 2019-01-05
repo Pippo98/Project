@@ -8,6 +8,5 @@
         <file>GraphChart.qml</file>
         <file>ControlPanel.qml</file>
         <file>Page3Form.qml</file>
-        <file>Bars.qml</file>
     </qresource>
 </RCC>

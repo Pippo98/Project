@@ -10,44 +10,66 @@
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 
-static QTimer *tim1 = new QTimer();
 static QFile *fil = new QFile();
+static QTimer *tim1 = new QTimer();
 
-static serial *s = new serial;
 const auto ser = QSerialPortInfo::availablePorts();
 static graph g;
 static backend b;
+static serial *s = new serial;
 
+/*----------------------------------------------------------------------------------------------*/
+//THESE VARIABLES COULD BE MODIFIED
+
+//default graph mode
 static bool CAN_MODE = true;
 
-static bool doneCalibration = false;
-static int iterations = 0;
-static double average = 0;
+//Directory of the log file
+static QString dirName = "/home/filippo/Scrivania/logFolder";
+
+//graphs names
+//has to be in the same order of how are appended the variables in canArr in parseCan() function
+static QList<QString> Frontal   = {"enc1", "enc2", "aX", "aY", "aZ", "gX", "gY", "gZ", "steer"};
+static QList<QString> Pedals    = {"apps1", "apps2", "brk"};
+static QList<QString> Ecu       = {};
+static QList<QString> Inverter  = {};
+static QList<QString> Lv        = {};
+static QList<QString> Hv        = {};
+/*----------------------------------------------------------------------------------------------*/
+
+static bool logState = false;
+
 static bool isPortOpened;
+static double average = 0;
+static int iterations = 0;
+static bool doneCalibration = false;
 
 static QString text;
 
-static QVector<double> dataArray;
 static QVector<double> canArr;
+static QVector<double> dataArray;
 
-static bool logState = false;
+static QList<QString> graphsNames;
+
+/*----------------------------------------------------------------------------------------------*/
+//Structures
 
 struct frontalStc{
     double encoder1;
     double encoder2;
-    double steer;
-    double gx;
-    double gy;
-    double gz;
     double ax;
     double ay;
     double az;
+    double gx;
+    double gy;
+    double gz;
+    double steer;
 };
 
 struct pedalsStc{
-    double brk;
     double apps1;
     double apps2;
+    double brk;
 };
 
 struct ecuStc{
@@ -73,6 +95,8 @@ static struct inverterStc      inverter;
 static struct lvAccumulatorStc lvAccumulator;
 static struct hvAccumulatorStc hvAccumulator;
 
+/*----------------------------------------------------------------------------------------------*/
+
 serial::serial(QObject * parent) : QObject (parent)
 {
 }
@@ -81,34 +105,36 @@ serial::~serial(){
     fil->close();
 }
 
-void serial::setLogState(bool state){
-    logState = state;
-    if(logState){
-        QByteArray intestation;
+//principal function to manage the functuons flow
+void serial::manageFunctions(){
 
-        intestation.append("Eagle Trento Racing Team\r\n");
-        intestation.append("Real Time Log File\r\n");
-        intestation.append(QDateTime::currentDateTime().date().toString());
-        intestation.append("\t");
-        intestation.append(QDateTime::currentDateTime().time().toString());
-        intestation.append("\r\n");
-
-        QDir dir;
-        dir.setCurrent("/home/filippo/Scrivania/logFolder");
-        fil->setFileName("log" +
-                         QDateTime::currentDateTime().date().toString()
-                         + " " +
-                         QDateTime::currentDateTime().time().toString()
-                         );
-        fil->open(QFile::ReadWrite);
-        fil->write(intestation);
+    serialData = serialPort->readLine();
+    while(serialPort->bytesAvailable() > 100){
+        serialPort->readLine();
     }
-    else{
-        fil->close();
+    //serialData = serialPort->readAll();
+    //serialPort->readAll();
+
+    if(!doneCalibration && !CAN_MODE){
+        detectGraphs();
+    }
+    if(doneCalibration || CAN_MODE){
+        parseData();
+
+        if(CAN_MODE){
+        parseCan();
+        }
+
+        g.managePoints();
+
+        if(logState)
+        fil->write(serialData);
     }
 }
 
+//differentiate the data from different id
 void serial::parseCan(){
+    canArr.clear();
     if(dataArray.count() >= 8){
         //PEADLS
         if(int(dataArray[1]) == 176){
@@ -135,11 +161,12 @@ void serial::parseCan(){
             }
         }
     }
-    canArr.clear();
+
+
     //FRONTAL
-    if(b.getRequestedGraphs().at(0) == 1){
-        //canArr.append(frontal.encoder1);
-        //canArr.append(frontal.encoder2);
+    if(requestedGraphs.at(0) == 1){
+        canArr.append(frontal.encoder1);
+        canArr.append(frontal.encoder2);
         canArr.append(frontal.ax);
         canArr.append(frontal.ay);
         canArr.append(frontal.az);
@@ -149,29 +176,30 @@ void serial::parseCan(){
         canArr.append(frontal.steer);
     }
     //PEDALS
-    if(b.getRequestedGraphs().at(1) == 1){
+    if(requestedGraphs.at(1) == 1){
         canArr.append(pedals.apps1);
         canArr.append(pedals.apps2);
         canArr.append(pedals.brk);
     }
     //ECU
-    if(b.getRequestedGraphs().at(2) == 1){
+    if(requestedGraphs.at(2) == 1){
 
     }
     //INVERTER
-    if(b.getRequestedGraphs().at(3) == 1){
+    if(requestedGraphs.at(3) == 1){
 
     }
     //LOW VOLTAGE
-    if(b.getRequestedGraphs().at(4) == 1){
+    if(requestedGraphs.at(4) == 1){
 
     }
     //HIGH VOLTAGE
-    if(b.getRequestedGraphs().at(6) == 1){
+    if(requestedGraphs.at(6) == 1){
 
     }
 }
 
+//function to get all the numbers in the buffer received
 void serial::parseData(){
 
     QStringList numberArr;
@@ -203,24 +231,6 @@ void serial::parseData(){
         qDebug() << "wrong";
     }
 
-}
-
-void serial::manageData(){
-    if(!doneCalibration && !CAN_MODE){
-        detectGraphs();
-    }
-    if(doneCalibration || CAN_MODE){
-        parseData();
-
-        if(CAN_MODE){
-        parseCan();
-        }
-
-        g.managePoints();
-
-        if(logState)
-        fil->write(serialData);
-    }
 }
 
 //initialization
@@ -261,6 +271,7 @@ QStringList serial::detectPort(){
     return port_list;
 }
 
+//gets the info of the port given as argument
 QString serial::portInfo(QString port){
     QString info;
     const auto serialPortInfos = QSerialPortInfo::availablePorts();
@@ -276,54 +287,12 @@ QString serial::portInfo(QString port){
     return info;
 }
 
-//connection needed
-void serial::connection(){
-    //connection to read the buffer
-    connect(serialPort, &QSerialPort::readyRead, s, [=]{
-        serialData = serialPort->readLine();
-        manageData();
-    });
-}
-
-bool serial::init(){
-
-    bool result = false;
-    serialPort = new QSerialPort();
-
-    qDebug() << serialPortSelected;
-
-    serialPort->setPortName(serialPortSelected);
-    serialPort->setBaudRate(250000);
-    serialPort->setDataBits(QSerialPort::Data8);
-    serialPort->setFlowControl(QSerialPort::NoFlowControl);
-    serialPort->setParity(QSerialPort::NoParity);
-
-    if(serialPort->open(QSerialPort::ReadOnly)){
-        result = true;
-        isPortOpened = true;
-    }
-    else{
-        qDebug() << "Cannot Open Serial Port";
-        result = false;
-    }
-
-    return result;
-}
-
-//disconnect everything and closes the serial port
-void serial::deInit(){
-
-    QObject::disconnect(serialPort, &QSerialPort::readyRead, nullptr, nullptr);
-
-    isPortOpened = false;
-    doneCalibration = false;
-    iterations = 0;
-    average = 0;
-
-    serialPort->close();
-    emit portStateChanged(0);
-
-    qDebug() << "Serial Port Closed";
+void serial::updateGraphsNames(){
+    graphsNames.clear();
+    if(requestedGraphs.at(0) == 1)  graphsNames.append(Frontal);
+    if(requestedGraphs.at(1) == 1)  graphsNames.append(Pedals);
+    if(requestedGraphs.at(2) == 1)  graphsNames.append(Ecu);
+    g.setGraphsNames(graphsNames);
 }
 
 QString serial::print_data(){
@@ -334,6 +303,71 @@ bool serial::isSerialOpened(){
     return isPortOpened;
 }
 
+//INIT-DEINIT Functions
+
+void serial::restartSequence(){
+    dataArray.clear();
+    canArr.clear();
+}
+
+//connection needed
+void serial::connection(){
+    //connection to read the buffer
+    connect(serialPort, &QSerialPort::readyRead, s, [=]{
+        manageFunctions();
+    });
+
+    tim1->setInterval(10);
+    tim1->start();
+    connect(tim1, &QTimer::timeout, this, [=]{
+    });
+}
+
+//init function for the serial port
+bool serial::init(){
+
+    bool result = false;
+    serialPort = new QSerialPort();
+
+    serialPort->setPortName(serialPortSelected);
+    serialPort->setBaudRate(250000);
+    serialPort->setDataBits(QSerialPort::Data8);
+    serialPort->setFlowControl(QSerialPort::NoFlowControl);
+    serialPort->setParity(QSerialPort::NoParity);
+
+    if(serialPort->open(QSerialPort::ReadOnly)){
+        result = true;
+    }
+    else{
+        qDebug() << "Cannot Open Serial Port";
+        result = false;
+    }
+    isPortOpened = result;
+    g.setIsSerialOpened(isPortOpened);
+
+    return result;
+}
+
+//disconnect everything and closes the serial port
+void serial::deInit(){
+    QObject::disconnect(serialPort, &QSerialPort::readyRead, nullptr, nullptr);
+    QObject::disconnect(tim1, &QTimer::timeout, nullptr, nullptr);
+
+    isPortOpened = false;
+    doneCalibration = false;
+    iterations = 0;
+    average = 0;
+
+    g.setIsSerialOpened(isPortOpened);
+
+    serialPort->close();
+    emit portStateChanged(0);
+
+    qDebug() << "Serial Port Closed";
+}
+
+//SET-GET Functions
+
 QVector<double> serial::getPointsData(){
     if(CAN_MODE == true){
         return canArr;
@@ -341,6 +375,30 @@ QVector<double> serial::getPointsData(){
     else{
         return dataArray;
     }
+}
+
+QString serial::getText(){
+    return text;
+}
+
+bool serial::getCanMode(){
+    return CAN_MODE;
+}
+
+void serial::setGraphsRequested(QVector<int> reqGrph){
+    this->requestedGraphs = reqGrph;
+    updateGraphsNames();
+}
+
+void serial::setCanMode(int value){
+    CAN_MODE = value;
+    g.setCanMode(CAN_MODE);
+    restartSequence();
+    g.restartSequence();
+}
+
+void serial::setPrint_data(QString var){
+    Q_UNUSED(var)
 }
 
 void serial::setText(){
@@ -351,18 +409,33 @@ void serial::setText(){
     }
 }
 
-QString serial::getText(){
-    return text;
+//enables and disables the real time log
+void serial::setLogState(bool state){
+    logState = state;
+    if(logState){
+        QByteArray intestation;
+
+        intestation.append("Eagle Trento Racing Team\r\n");
+        intestation.append("Real Time Log File\r\n");
+        intestation.append(QDateTime::currentDateTime().date().toString());
+        intestation.append("\t");
+        intestation.append(QDateTime::currentDateTime().time().toString());
+        intestation.append("\r\n");
+
+        QDir dir;
+        dir.setCurrent(dirName);
+        fil->setFileName("log" +
+                         QDateTime::currentDateTime().date().toString()
+                         + " " +
+                         QDateTime::currentDateTime().time().toString()
+                         );
+        fil->open(QFile::ReadWrite);
+        fil->write(intestation);
+    }
+    else{
+        fil->close();
+    }
 }
-
-void serial::setPrint_data(QString var){
-    Q_UNUSED(var)
-}
-
-
-
-
-
 
 
 

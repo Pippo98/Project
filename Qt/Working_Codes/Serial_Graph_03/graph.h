@@ -18,11 +18,13 @@ class graph : public QObject
     Q_OBJECT
 public:
     explicit graph();
-    void connection();
+    void connections();
     void deInit();
     void managePoints();
-
-    Q_INVOKABLE double getBarValue();
+    void setGraphsNames(QList<QString>);
+    void setIsSerialOpened(bool);
+    void setCanMode(bool);
+    void restartSequence();
 
 public slots:
     void printCoord(QAbstractSeries *, int);
@@ -32,6 +34,7 @@ public slots:
 
 public:
     QString portOpened;
+
     QXYSeries *mSeries;
     QValueAxis *valueAxis;
 

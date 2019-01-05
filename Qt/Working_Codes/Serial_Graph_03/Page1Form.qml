@@ -27,7 +27,7 @@ Page {
 
     ControlPanel{
         id: controlPanel
-        width: 145
+        width: 170
         anchors.bottom: parent.bottom
         anchors.top: parent.top
         anchors.topMargin: 6
@@ -39,7 +39,6 @@ Page {
         id: switchColumn
         anchors.left: controlPanel.right
         anchors.top : parent.top
-        property bool stateVisible: false
         property int members: 10
         spacing: 1
 

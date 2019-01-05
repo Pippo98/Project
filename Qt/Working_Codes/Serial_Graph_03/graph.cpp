@@ -14,11 +14,16 @@ Q_DECLARE_METATYPE(QAbstractSeries *)
 Q_DECLARE_METATYPE(QAbstractAxis *)
 
 static QTimer *tim1 = new QTimer();
+static QTime  *Time = new QTime();
 
 static double x;
 
+static QList<QString> graphsNames;
 static QList<QVector<QPointF>> pointsList;
 static QVector<double> dataArray;
+
+static bool CAN_MODE = true;
+static bool isSerialOpened;
 
 static serial s;
 static backend b;
@@ -28,38 +33,18 @@ graph::graph(){
     qRegisterMetaType<QAbstractAxis*>();
 }
 
-void graph::deInit(){
-    disconnect(tim1, &QTimer::timeout, nullptr, nullptr);
-}
-
-void graph::connection(){
-    tim1->setInterval(10);
-    tim1->start();
-    QObject::connect(tim1, &QTimer::timeout, [=]{
-        x += 0.01;
-    });
-}
-
-double graph::getBarValue(){
-    if(s.isSerialOpened() == true && dataArray.count() > 0){
-        if(dataArray.count() > 0){
-            return dataArray.at(0);
-        }
-    }
-    return 0;
-}
-
+//adds the received point to the points list
 void graph::managePoints(){
     dataArray = s.getPointsData();
 
-    while(pointsList.count() < 10){
+    while(pointsList.count() < 20){
         QVector<QPointF> points;
         pointsList.append(points);
     }
 
     for(int i = 0; i < dataArray.count(); i++){
         pointsList[i].append(QPointF(x, dataArray[i]));
-        if(x > 2){
+        if(pointsList.at(i).count() > 1000){
             pointsList[i].remove(0);
         }
     }
@@ -69,11 +54,21 @@ void graph::managePoints(){
 //series is an abstract value that points to the qml line series
 //using mSeries is possible to assign c++ values to qml series
 void graph::printCoord(QAbstractSeries * series, int index){
-    if(s.isSerialOpened() == true && dataArray.count() > 0){
-        if(index < pointsList.count() && index < dataArray.count()){
-            if(series){
-                mSeries = static_cast<QXYSeries *>(series);
+    if(series){
+        mSeries = static_cast<QXYSeries *>(series);
+        if(isSerialOpened && dataArray.count() > 0){
+            if(index < pointsList.count() && index < dataArray.count()){
                 mSeries->replace(pointsList.at(index));
+                mSeries->setVisible(true);
+                qDebug() << (x*1000 - Time->elapsed());
+                if(CAN_MODE){
+                    if(index < graphsNames.count()){
+                        mSeries->setName(graphsNames.at(index));
+                    }
+                }
+            }
+            else{
+                mSeries->setVisible(false);
             }
         }
     }
@@ -160,3 +155,40 @@ void graph::getAxisValues(QAbstractAxis * axis, int index, int x_y, int single_t
         }
     }
 }
+
+//INIT-DEINIT Functions
+void graph::deInit(){
+    disconnect(tim1, &QTimer::timeout, nullptr, nullptr);
+}
+
+void graph::restartSequence(){
+    pointsList.clear();
+    Time->restart();
+}
+
+//sets the x value basing on the time (10 ms)
+void graph::connections(){
+    tim1->setInterval(10);
+    tim1->start();
+    QObject::connect(tim1, &QTimer::timeout, [=]{
+        x += 0.01;
+    });
+}
+
+//SET-GET Functions
+
+void  graph::setIsSerialOpened(bool value){
+    isSerialOpened = value;
+}
+
+void graph::setCanMode(bool value){
+    CAN_MODE = value;
+}
+
+void graph::setGraphsNames(QList<QString> names){
+    graphsNames = names;
+}
+
+
+
+
